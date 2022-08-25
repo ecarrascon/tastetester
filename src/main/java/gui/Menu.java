@@ -3,6 +3,7 @@ package gui;
 
 import gui.utilities.ComponentMover;
 import gui.utilities.ComponentResizer;
+import gui.utilities.PanelBackgroundImg;
 import net.miginfocom.swing.MigLayout;
 import static javax.swing.JOptionPane.showMessageDialog;
 
@@ -17,6 +18,8 @@ public class Menu extends JFrame {
     //App Menu, select mode window
     public Menu() {
         super("TasteTester");
+
+        //Resize and Move
         setUndecorated( true );
         ComponentResizer resizer = new ComponentResizer();
         resizer.registerComponent(this);
@@ -26,23 +29,25 @@ public class Menu extends JFrame {
         mover.setDragInsets(new Insets(5,5,5,5));
         mover.registerComponent(this);
 
+        //Window's ImgIco
         URL imgLogo = getClass().getResource("/logo.png");
         setIconImage(new ImageIcon(imgLogo).getImage());
 
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(800,800);
+        setSize(1024,1000);
         add(menuDistribution());
         setLocationRelativeTo(null);
 
-
-
     }
+
     //Base of Distribution of the components
     private JPanel menuDistribution(){
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new MigLayout("fill,wrap","[]","[][][][]"));
+
+
+        PanelBackgroundImg panel = new PanelBackgroundImg();
+        panel.setLayout(new MigLayout("fill,wrap","[]","[1mm!][][][][]"));
         buildMiGForm(panel);
         return panel;
     }
@@ -55,11 +60,12 @@ public class Menu extends JFrame {
 
 
 
+        JButton buttonExit = new JButton();
         JButton buttonMovie = new JButton();
         JButton buttonMusic = new JButton();
         JButton buttonBook = new JButton();
 
-        //Add img icons to the buttons and clear the button background
+        //Add img icons to the buttons(And the ExitButton) and clear the button background
         try {
             URL imgMovie = getClass().getResource("/cinema.png");
             buttonMovie.setIcon(new ImageIcon(imgMovie));
@@ -76,12 +82,20 @@ public class Menu extends JFrame {
             buttonBook.setBorder(BorderFactory.createEmptyBorder());
             buttonBook.setContentAreaFilled(false);
 
+            URL imgExit = getClass().getResource("/exit.png");
+            buttonExit.setIcon(new ImageIcon(imgExit));
+            buttonExit.setBorder(BorderFactory.createEmptyBorder());
+            buttonExit.setContentAreaFilled(false);
+
+
+
 
         } catch (Exception ex) {
             showMessageDialog(null,"Menu Icons Not loaded");
         }
 
-
+        //Exit Button
+        panel.add(buttonExit);
 
         //Adding Font and Title
         try {
@@ -99,11 +113,15 @@ public class Menu extends JFrame {
         } catch (FontFormatException e) {
             showMessageDialog(null,"Font not found");
         }
+
         panel.setBackground(Color.BLACK);
+
         panel.add(buttonMovie, "align center");
         panel.add(buttonBook, "align center");
         panel.add(buttonMusic, "align center");
+
     }
+
 
 
 }
