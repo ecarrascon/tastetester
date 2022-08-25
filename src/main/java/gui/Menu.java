@@ -1,6 +1,8 @@
 package gui;
 
 
+import gui.utilities.ComponentMover;
+import gui.utilities.ComponentResizer;
 import net.miginfocom.swing.MigLayout;
 import static javax.swing.JOptionPane.showMessageDialog;
 
@@ -15,6 +17,14 @@ public class Menu extends JFrame {
     //App Menu, select mode window
     public Menu() {
         super("TasteTester");
+        setUndecorated( true );
+        ComponentResizer resizer = new ComponentResizer();
+        resizer.registerComponent(this);
+
+        ComponentMover mover= new ComponentMover();
+        mover.setChangeCursor(false);
+        mover.setDragInsets(new Insets(5,5,5,5));
+        mover.registerComponent(this);
 
         URL imgLogo = getClass().getResource("/logo.png");
         setIconImage(new ImageIcon(imgLogo).getImage());
