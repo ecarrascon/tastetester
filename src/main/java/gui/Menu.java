@@ -29,11 +29,11 @@ public class Menu extends JFrame {
         URL imgLogo = getClass().getResource("/logo.png");
         setIconImage(new ImageIcon(imgLogo).getImage());
 
-        setDefaultLookAndFeelDecorated(true);
+
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800,800);
         add(menuDistribution());
-
+        setLocationRelativeTo(null);
 
 
 
