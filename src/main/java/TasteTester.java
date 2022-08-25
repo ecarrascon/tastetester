@@ -1,4 +1,4 @@
-import GUI.Menu;
+import gui.Menu;
 
 import javax.swing.*;
 

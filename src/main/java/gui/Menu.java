@@ -1,10 +1,9 @@
-package GUI;
+package gui;
 
 
-import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import static javax.swing.JOptionPane.showMessageDialog;
-import javax.imageio.ImageIO;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -16,6 +15,9 @@ public class Menu extends JFrame {
     //App Menu, select mode window
     public Menu() {
         super("TasteTester");
+
+        URL imgLogo = getClass().getResource("/logo.png");
+        setIconImage(new ImageIcon(imgLogo).getImage());
 
         setDefaultLookAndFeelDecorated(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
