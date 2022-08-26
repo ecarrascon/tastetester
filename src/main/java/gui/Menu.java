@@ -9,6 +9,8 @@ import static javax.swing.JOptionPane.showMessageDialog;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 
@@ -61,6 +63,7 @@ public class Menu extends JFrame {
 
 
         JButton buttonExit = new JButton();
+        buttonExit.addActionListener(new CloseListener());
         JButton buttonMovie = new JButton();
         JButton buttonMusic = new JButton();
         JButton buttonBook = new JButton();
@@ -102,9 +105,6 @@ public class Menu extends JFrame {
             Font fontTitle = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/Maytra.ttf"));
             JLabel title = new JLabel("TasteTester",SwingConstants.CENTER);
             title.setFont(fontTitle.deriveFont(65f));
-            title.setForeground(Color.CYAN);
-            title.setOpaque(true);
-            title.setBackground(Color.GRAY);
 
             panel.add(title,"growy 1,growx");
 
@@ -114,7 +114,6 @@ public class Menu extends JFrame {
             showMessageDialog(null,"Font not found");
         }
 
-        panel.setBackground(Color.BLACK);
 
         panel.add(buttonMovie, "align center");
         panel.add(buttonBook, "align center");
@@ -122,6 +121,13 @@ public class Menu extends JFrame {
 
     }
 
+    //Listener to exit everything
+    private class CloseListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.exit(0);
+        }
+    }
 
 
 }
