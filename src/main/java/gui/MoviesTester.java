@@ -1,40 +1,46 @@
 package gui;
 
-import gui.utilities.ComponentMover;
-import gui.utilities.ComponentResizer;
-import gui.utilities.PanelBackgroundImg;
-import movies.imdbMovies;
+import gui.utilities.*;
+import playerdata.Movie;
+import playerdata.SetUpUser;
+import playerdata.User;
+
+import movies.ImdbMovies;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
 public class MoviesTester extends JDialog {
-
-    private JTextField searchMovie;
-    private imdbMovies imdbGetMovies;
-    private String movieTitle;
+    private JLabel resultNumberOne;
+    private JLabel resultNumberTwo;
+    private JTextField searchMovieUserOne;
+    private JTextField searchMovieUserTwo;
+    private final ImdbMovies imdbGetMovies;
+    private User userNumberOne;
+    private User userNumberTwo;
 
     public MoviesTester(){
-
         setTitle("MoviesTester");
-        imdbGetMovies = new imdbMovies();
+        //Making two players
+        userNumberOne = SetUpUser.setUpUser(1);
+        userNumberTwo = SetUpUser.setUpUser(2);
 
-        //Resize and Move
+
+        imdbGetMovies = new ImdbMovies();
+
+        //Window without borders
         setUndecorated(true);
-        ComponentResizer resizer = new ComponentResizer();
-        resizer.registerComponent(this);
 
-        ComponentMover mover = new ComponentMover();
-        mover.setChangeCursor(false);
-        mover.setDragInsets(new Insets(5, 5, 5, 5));
-        mover.registerComponent(this);
+        //The window can be resized and moved
+        WindowSettings.prepareWindow(this);
 
         //Window's ImgIco
         URL imgLogo = getClass().getResource("/logo.png");
@@ -57,30 +63,30 @@ public class MoviesTester extends JDialog {
         moviesButtonExit.addActionListener(new CloseListener());
 
 
-        //Add img icons to the buttons(And the ExitButton) and clear the buttons background
-        try {
-            URL imgExit = getClass().getResource("/exit.png");
-            moviesButtonExit.setIcon(new ImageIcon(imgExit));
-            moviesButtonExit.setBorder(BorderFactory.createEmptyBorder());
-            moviesButtonExit.setContentAreaFilled(false);
-        } catch (Exception ex) {
-            showMessageDialog(null, "Icon/s Not loaded");
-        }
+        ButtonSettings.prepareButton(moviesButtonExit,"/exit.png");
 
-        searchMovie = new JTextField();
-        searchMovie.addActionListener(new SearchTitle());
+        searchMovieUserOne = new JTextField();
+        searchMovieUserOne.addActionListener(new SearchTitle());
+        searchMovieUserTwo = new JTextField();
+        searchMovieUserTwo.addActionListener(new SearchTitle());
 
+        resultNumberOne = new JLabel(userNumberOne.getName()+" taste score: ");
+        resultNumberTwo = new JLabel(userNumberTwo.getName()+" taste score: ");
 
         panelMovie.add(moviesButtonExit,"wrap");
-        panelMovie.add(searchMovie,"w 20:300:300");
-
-
+        panelMovie.add(searchMovieUserOne,"w 20:300:300,wrap");
+        panelMovie.add(resultNumberOne,"wrap");
+        panelMovie.add(searchMovieUserTwo,"w 20:300:300,wrap");
+        panelMovie.add(resultNumberTwo);
 
 
         return panelMovie;
 
 
     }
+
+
+
     //Listener to exit everything
     private class CloseListener implements ActionListener {
         @Override
@@ -89,16 +95,52 @@ public class MoviesTester extends JDialog {
         }
     }
 
+    //Search the title to get the ID, is needed for search the rating
     private class SearchTitle implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                movieTitle = imdbGetMovies.getMovie(searchMovie.getText());
-                showMessageDialog(null,movieTitle);
+                //We make the movie, set the tittle
+                Movie movie = new Movie(((JTextField)e.getSource()).getText());
+                String movieTitle = imdbGetMovies.getMovie(((JTextField)e.getSource()).getText());
+                List<String> moviesSaved = Arrays.asList(movieTitle.split(","));
+                String[] findIdMovie = moviesSaved.get(7).split("\"");
+                //Set the id in the movie object
+                movie.setId(findIdMovie[3]);
+                Boolean isUserOne = e.getSource() == searchMovieUserOne;
+                //We pass the Id to the Rating finder
+                searchMovieRating(findIdMovie[3], movie, isUserOne);
+
+
             } catch (IOException ioException) {
-                showMessageDialog(null,"Error searching title");
+                showMessageDialog(null,"Error searching by title");
             }
         }
+    }
+
+
+
+    //We have to find the rating by ID (We can't do it only by Title)
+    private void searchMovieRating(String id,Movie movie,Boolean isUserNumberOne){
+        try {
+            String movieIdFinder = imdbGetMovies.getRating(id);
+            List<String> movieIdFinderSplitted = Arrays.asList(movieIdFinder.split(","));
+            String[] ratingFound = movieIdFinderSplitted.get(5).split("\"");
+            movie.setRating(Double.parseDouble(ratingFound[3]));
+            if (isUserNumberOne){
+                userNumberOne.addMovieToUser(movie);
+                resultNumberOne.setText(userNumberOne.getName()+" taste score: "+ userNumberOne.ratingAverage());
+            } else {
+                userNumberTwo.addMovieToUser(movie);
+                resultNumberTwo.setText(userNumberTwo.getName()+" taste score: "+ userNumberTwo.ratingAverage());
+            }
+
+
+        } catch (IOException e) {
+            showMessageDialog(null,"Error searching by TitleID");
+        }
+
+
     }
 }

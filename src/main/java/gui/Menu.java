@@ -1,9 +1,7 @@
 package gui;
 
 
-import gui.utilities.ComponentMover;
-import gui.utilities.ComponentResizer;
-import gui.utilities.PanelBackgroundImg;
+import gui.utilities.*;
 import net.miginfocom.swing.MigLayout;
 
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -19,16 +17,9 @@ public class Menu extends JFrame {
     //App Menu, select mode window
     public Menu() {
         super("TasteTester");
-
-        //Resize and Move
         setUndecorated(true);
-        ComponentResizer resizer = new ComponentResizer();
-        resizer.registerComponent(this);
 
-        ComponentMover mover = new ComponentMover();
-        mover.setChangeCursor(false);
-        mover.setDragInsets(new Insets(5, 5, 5, 5));
-        mover.registerComponent(this);
+        WindowSettings.prepareWindow(this);
 
         //Window's ImgIco
         URL imgLogo = getClass().getResource("/logo.png");
@@ -61,30 +52,11 @@ public class Menu extends JFrame {
         JButton buttonMusic = new JButton();
         JButton buttonBook = new JButton();
 
-        //Add img icons to the buttons(And the ExitButton) and clear the buttons background
-        try {
-            URL imgMovie = getClass().getResource("/cinema.png");
-            buttonMovie.setIcon(new ImageIcon(imgMovie));
-            buttonMovie.setBorder(BorderFactory.createEmptyBorder());
-            buttonMovie.setContentAreaFilled(false);
+        ButtonSettings.prepareButton(buttonMovie,"/cinema.png");
+        ButtonSettings.prepareButton(buttonMusic,"/music.png");
+        ButtonSettings.prepareButton(buttonBook,"/book.png");
+        ButtonSettings.prepareButton(buttonExit,"/exit.png");
 
-            URL imgMusic = getClass().getResource("/music.png");
-            buttonMusic.setIcon(new ImageIcon(imgMusic));
-            buttonMusic.setBorder(BorderFactory.createEmptyBorder());
-            buttonMusic.setContentAreaFilled(false);
-
-            URL imgBook = getClass().getResource("/book.png");
-            buttonBook.setIcon(new ImageIcon(imgBook));
-            buttonBook.setBorder(BorderFactory.createEmptyBorder());
-            buttonBook.setContentAreaFilled(false);
-
-            URL imgExit = getClass().getResource("/exit.png");
-            buttonExit.setIcon(new ImageIcon(imgExit));
-            buttonExit.setBorder(BorderFactory.createEmptyBorder());
-            buttonExit.setContentAreaFilled(false);
-        } catch (Exception ex) {
-            showMessageDialog(null, "Menu Icons Not loaded");
-        }
 
         //Exit Button added before Title
         panel.add(buttonExit, "wrap");
