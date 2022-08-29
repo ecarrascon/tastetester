@@ -4,7 +4,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import settings.ApiKeys;
-
 import java.io.IOException;
 
 public class ImdbMovies {
@@ -15,6 +14,7 @@ public class ImdbMovies {
                 .method("GET", null)
                 .build();
         Response response = client.newCall(request).execute();
+
         return response.body().string();
 
     }

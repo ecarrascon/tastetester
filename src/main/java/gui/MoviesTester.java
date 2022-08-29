@@ -1,5 +1,7 @@
 package gui;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import gui.utilities.*;
 import playerdata.Movie;
 import playerdata.SetUpUser;
@@ -9,16 +11,21 @@ import movies.ImdbMovies;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
 public class MoviesTester extends JDialog {
+    private JList choooseMoviesUOne;
+    private DefaultListModel listModelUOne;
+    private JList choooseMoviesUTwo;
+    private DefaultListModel listModelUTwo;
     private JLabel resultNumberOne;
     private JLabel resultNumberTwo;
     private JTextField searchMovieUserOne;
@@ -26,8 +33,12 @@ public class MoviesTester extends JDialog {
     private final ImdbMovies imdbGetMovies;
     private User userNumberOne;
     private User userNumberTwo;
+    private Gson gson;
+    private List<Movie> movieList;
+    private boolean isUserOne;
 
     public MoviesTester(){
+        gson = new Gson();
         setTitle("MoviesTester");
         //Making two players
         userNumberOne = SetUpUser.setUpUser(1);
@@ -62,7 +73,6 @@ public class MoviesTester extends JDialog {
         JButton moviesButtonExit = new JButton();
         moviesButtonExit.addActionListener(new CloseListener());
 
-
         ButtonSettings.prepareButton(moviesButtonExit,"/exit.png");
 
         searchMovieUserOne = new JTextField();
@@ -73,16 +83,29 @@ public class MoviesTester extends JDialog {
         resultNumberOne = new JLabel(userNumberOne.getName()+" taste score: ");
         resultNumberTwo = new JLabel(userNumberTwo.getName()+" taste score: ");
 
+        choooseMoviesUOne = new JList();
+        choooseMoviesUOne.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        choooseMoviesUOne.addMouseListener(selectMovie);
+
+        listModelUOne = new DefaultListModel();
+        choooseMoviesUOne.setModel(listModelUOne);
+
+        choooseMoviesUTwo = new JList();
+        choooseMoviesUTwo.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        choooseMoviesUTwo.addMouseListener(selectMovie);
+
+        listModelUTwo = new DefaultListModel();
+        choooseMoviesUTwo.setModel(listModelUTwo);
+
         panelMovie.add(moviesButtonExit,"wrap");
         panelMovie.add(searchMovieUserOne,"w 20:300:300,wrap");
+        panelMovie.add(choooseMoviesUOne,"wrap");
         panelMovie.add(resultNumberOne,"wrap");
         panelMovie.add(searchMovieUserTwo,"w 20:300:300,wrap");
+        panelMovie.add(choooseMoviesUTwo,"wrap");
         panelMovie.add(resultNumberTwo);
 
-
         return panelMovie;
-
-
     }
 
 
@@ -101,17 +124,32 @@ public class MoviesTester extends JDialog {
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                //We make the movie, set the tittle
-                Movie movie = new Movie(((JTextField)e.getSource()).getText());
-                String movieTitle = imdbGetMovies.getMovie(((JTextField)e.getSource()).getText());
-                List<String> moviesSaved = Arrays.asList(movieTitle.split(","));
-                String[] findIdMovie = moviesSaved.get(7).split("\"");
-                //Set the id in the movie object
-                movie.setId(findIdMovie[3]);
-                Boolean isUserOne = e.getSource() == searchMovieUserOne;
-                //We pass the Id to the Rating finder
-                searchMovieRating(findIdMovie[3], movie, isUserOne);
 
+                //We send the title to search
+                String movieTitle = imdbGetMovies.getMovie(((JTextField)e.getSource()).getText());
+                //Setup the Json data
+                String movieData = movieTitle.substring(movieTitle.indexOf("results")+9,
+                        movieTitle.indexOf("errorMessage")-2);
+                //All the movies with that title (And similar)
+                java.lang.reflect.Type movieListType = new TypeToken<ArrayList<Movie>>(){}.getType();
+
+                movieList = gson.fromJson(movieData,movieListType);
+
+                isUserOne = e.getSource() == searchMovieUserOne;
+
+                if (isUserOne){
+                    listModelUOne.clear();
+                    for (Movie movie: movieList){
+
+                        listModelUOne.addElement(movie.getTitle()+" "+movie.getDescription());
+                    }
+                } else {
+                    listModelUTwo.clear();
+                    for (Movie movie: movieList){
+
+                        listModelUTwo.addElement(movie.getTitle()+" "+movie.getDescription());
+                    }
+                }
 
             } catch (IOException ioException) {
                 showMessageDialog(null,"Error searching by title");
@@ -119,16 +157,14 @@ public class MoviesTester extends JDialog {
         }
     }
 
-
-
     //We have to find the rating by ID (We can't do it only by Title)
-    private void searchMovieRating(String id,Movie movie,Boolean isUserNumberOne){
+    private void searchMovieRating(Movie movie){
+
         try {
-            String movieIdFinder = imdbGetMovies.getRating(id);
-            List<String> movieIdFinderSplitted = Arrays.asList(movieIdFinder.split(","));
-            String[] ratingFound = movieIdFinderSplitted.get(5).split("\"");
-            movie.setRating(Double.parseDouble(ratingFound[3]));
-            if (isUserNumberOne){
+            String movieIdFinder = imdbGetMovies.getRating(movie.getId());
+            Movie movieRating = gson.fromJson(movieIdFinder,Movie.class);
+            movie.setRating(movieRating.getImDb());
+            if (isUserOne){
                 userNumberOne.addMovieToUser(movie);
                 resultNumberOne.setText(userNumberOne.getName()+" taste score: "+ userNumberOne.ratingAverage());
             } else {
@@ -143,4 +179,21 @@ public class MoviesTester extends JDialog {
 
 
     }
+
+    private final MouseListener selectMovie = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            super.mouseClicked(e);
+            if (isUserOne){
+                searchMovieRating(movieList.get(choooseMoviesUOne.getSelectedIndex()));
+                listModelUOne.clear();
+
+            }else{
+                searchMovieRating(movieList.get(choooseMoviesUTwo.getSelectedIndex()));
+                listModelUTwo.clear();
+            }
+
+
+        }
+    };
 }
