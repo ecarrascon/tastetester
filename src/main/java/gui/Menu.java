@@ -26,7 +26,7 @@ public class Menu extends JFrame {
         setIconImage(new ImageIcon(imgLogo).getImage());
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(871, 496);
+        setSize(864, 366);
         add(menuDistribution());
         setLocationRelativeTo(null);
 
@@ -35,7 +35,7 @@ public class Menu extends JFrame {
     //Base of Distribution of the components
     private JPanel menuDistribution() {
         JPanel panel = new JPanel();
-        panel.setLayout(new MigLayout("fill", "[][][]", "[1mm!][][]"));
+        panel.setLayout(new MigLayout(" fill", "[][][]", "[1mm!][][]"));
         buildMiGForm(panel);
         return panel;
     }
@@ -67,11 +67,24 @@ public class Menu extends JFrame {
 
         //Adding Font and Title
         try {
-            Font fontTitle = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/Maytra.ttf"));
+            Font fontTitle = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/Voga-Medium.otf"));
             JLabel title = new JLabel("TasteTester", SwingConstants.CENTER);
-            title.setFont(fontTitle.deriveFont(65f));
+            title.setFont(fontTitle.deriveFont(125f));
+            title.setForeground(Color.BLACK);
 
-            panel.add(title, "grow,span ,wrap");
+
+
+            Font fontSubTitle = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/Voga-Medium.otf"));
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(fontSubTitle);
+            JLabel subTitle = new JLabel("<html><center><b>Welcome! Click the movie's button to test your taste <br/> You can do it alone or with a friend, who will have a better taste? Good luck! </b> </html>", SwingConstants.CENTER);
+            subTitle.setFont(fontSubTitle.deriveFont(34f));
+            subTitle.setForeground(Color.decode("#122c3b"));
+
+
+
+            panel.add(title, "grow, span, wrap");
+            panel.add(subTitle,"grow, span, wrap");
+
 
         } catch (IOException e) {
             showMessageDialog(null, "Font not found");
@@ -80,7 +93,7 @@ public class Menu extends JFrame {
         }
 
         //Adding all the Buttons
-        panel.add(buttonMovie, "align center,span");
+        panel.add(buttonMovie, "align center, span");
 
         /*  Future features Rating music books etc
         panel.add(buttonBook, "align center");
