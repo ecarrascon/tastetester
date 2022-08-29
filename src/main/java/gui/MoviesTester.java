@@ -11,6 +11,7 @@ import movies.ImdbMovies;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -26,6 +27,7 @@ public class MoviesTester extends JDialog {
     private DefaultListModel listModelUOne;
     private JList choooseMoviesUTwo;
     private DefaultListModel listModelUTwo;
+    private JLabel infoAndWinner;
     private JLabel resultNumberOne;
     private JLabel resultNumberTwo;
     private JTextField searchMovieUserOne;
@@ -38,6 +40,7 @@ public class MoviesTester extends JDialog {
     private boolean isUserOne;
 
     public MoviesTester() {
+        setBackground(Color.WHITE);
         gson = new Gson();
         setTitle("MoviesTester");
         //Making two players NumberOne is the left and NumberTwo is the right
@@ -57,7 +60,7 @@ public class MoviesTester extends JDialog {
         URL imgLogo = getClass().getResource("/logo.png");
         setIconImage(new ImageIcon(imgLogo).getImage());
 
-        setSize(1024, 1000);
+        setSize(670, 300);
         setLocationRelativeTo(null);
 
         //Add all the components
@@ -70,7 +73,7 @@ public class MoviesTester extends JDialog {
     private JPanel componentsMovies() {
         JPanel panelMovie = new JPanel();
         panelMovie.setLayout(new MigLayout());
-
+        panelMovie.setBackground(Color.WHITE);
         //Exit Button
         JButton moviesButtonExit = new JButton();
         moviesButtonExit.addActionListener(new CloseListener());
@@ -84,7 +87,11 @@ public class MoviesTester extends JDialog {
         searchMovieUserTwo.addActionListener(new SearchTitle());
         //Each score
         resultNumberOne = new JLabel(userNumberOne.getName() + " taste score: ");
+        resultNumberOne.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
+        resultNumberOne.setForeground(Color.BLACK);
         resultNumberTwo = new JLabel(userNumberTwo.getName() + " taste score: ");
+        resultNumberTwo.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
+        resultNumberTwo.setForeground(Color.BLACK);
         //List to choose exact movie after searching title
         choooseMoviesUOne = new JList();
         choooseMoviesUOne.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -100,13 +107,21 @@ public class MoviesTester extends JDialog {
         listModelUTwo = new DefaultListModel();
         choooseMoviesUTwo.setModel(listModelUTwo);
 
-        panelMovie.add(moviesButtonExit, "wrap");
-        panelMovie.add(searchMovieUserOne, "w 20:300:300,wrap");
-        panelMovie.add(choooseMoviesUOne, "wrap");
-        panelMovie.add(resultNumberOne, "wrap");
-        panelMovie.add(searchMovieUserTwo, "w 20:300:300,wrap");
-        panelMovie.add(choooseMoviesUTwo, "wrap");
-        panelMovie.add(resultNumberTwo);
+        //Info about the rules. And the winner
+
+        infoAndWinner = new JLabel("<html><center>Each user have to search <br> the same number of movies</html>");
+        infoAndWinner.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
+        infoAndWinner.setForeground(Color.BLACK);
+
+        panelMovie.add(moviesButtonExit);
+        panelMovie.add(infoAndWinner, "wrap, gapleft 12");
+        panelMovie.add(searchMovieUserOne, "w 20:216:216");
+        panelMovie.add(searchMovieUserTwo, "w 20:216:216, gapleft 223, wrap");
+        panelMovie.add(choooseMoviesUOne, "w 20:286:286");
+        panelMovie.add(choooseMoviesUTwo, "wrap, gapleft 223");
+        panelMovie.add(resultNumberOne);
+        panelMovie.add(resultNumberTwo, "gapleft 223");
+
 
         return panelMovie;
     }
@@ -170,11 +185,21 @@ public class MoviesTester extends JDialog {
                 searchMovieRating(movieList.get(choooseMoviesUOne.getSelectedIndex()));
                 listModelUOne.clear();
 
+
             } else {
                 searchMovieRating(movieList.get(choooseMoviesUTwo.getSelectedIndex()));
                 listModelUTwo.clear();
             }
 
+            //Changing the winner
+            if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingAverage() > userNumberTwo.ratingAverage()) {
+                infoAndWinner.setText("<html><center>" + userNumberOne.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f",userNumberOne.ratingAverage()) + "</html>");
+            } else if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingAverage() < userNumberTwo.ratingAverage()) {
+                infoAndWinner.setText("<html><center>" + userNumberTwo.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f",userNumberTwo.ratingAverage()) + "</html>");
+
+            } else {
+                infoAndWinner.setText("<html><center>Each user have to search <br> the same number of movies</html>");
+            }
 
         }
     };
@@ -189,10 +214,10 @@ public class MoviesTester extends JDialog {
             //The average of the rating is done in User.class
             if (isUserOne) {
                 userNumberOne.addMovieToUser(movie);
-                resultNumberOne.setText(userNumberOne.getName() + " taste score: " + userNumberOne.ratingAverage());
+                resultNumberOne.setText(userNumberOne.getName() + " taste score: " + String.format("%.2f", userNumberOne.ratingAverage()));
             } else {
                 userNumberTwo.addMovieToUser(movie);
-                resultNumberTwo.setText(userNumberTwo.getName() + " taste score: " + userNumberTwo.ratingAverage());
+                resultNumberTwo.setText(userNumberTwo.getName() + " taste score: " + String.format("%.2f", userNumberTwo.ratingAverage()));
             }
 
 

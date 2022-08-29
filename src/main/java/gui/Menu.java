@@ -18,7 +18,6 @@ public class Menu extends JFrame {
     public Menu() {
         super("TasteTester");
         setUndecorated(true);
-
         WindowSettings.prepareWindow(this);
 
         //Window's ImgIco
@@ -35,6 +34,7 @@ public class Menu extends JFrame {
     //Base of Distribution of the components
     private JPanel menuDistribution() {
         JPanel panel = new JPanel();
+
         panel.setLayout(new MigLayout(" fill", "[][][]", "[1mm!][][]"));
         buildMiGForm(panel);
         return panel;
@@ -75,7 +75,7 @@ public class Menu extends JFrame {
 
             Font fontSubTitle = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/Voga-Medium.otf"));
             GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(fontSubTitle);
-            JLabel subTitle = new JLabel("<html><center><b>Welcome! Click the movie's button to test your taste <br/> You can do it alone or with a friend, who will have a better taste? Good luck! </b> </html>", SwingConstants.CENTER);
+            JLabel subTitle = new JLabel("<html><center><b>Welcome! Click the movie's button to test your taste <br/> You can do it alone or with a friend. Who will have a better taste? Good luck! </b> </html>", SwingConstants.CENTER);
             subTitle.setFont(fontSubTitle.deriveFont(34f));
             subTitle.setForeground(Color.decode("#122c3b"));
 

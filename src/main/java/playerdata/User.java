@@ -34,4 +34,7 @@ public class User {
         return movies.get(index);
     }
 
+    public ArrayList<Movie> getMovies() {
+        return movies;
+    }
 }
