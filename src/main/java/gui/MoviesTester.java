@@ -65,8 +65,8 @@ public class MoviesTester extends JDialog {
     }
 
     //Panel of the components
-    private PanelBackgroundImg componentsMovies(){
-        PanelBackgroundImg panelMovie = new PanelBackgroundImg(getClass().getResource("/background.png"));
+    private JPanel componentsMovies(){
+        JPanel panelMovie = new JPanel();
         panelMovie.setLayout(new MigLayout());
 
         //Exit Button

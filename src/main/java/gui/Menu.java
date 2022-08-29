@@ -34,7 +34,7 @@ public class Menu extends JFrame {
 
     //Base of Distribution of the components
     private JPanel menuDistribution() {
-        PanelBackgroundImg panel = new PanelBackgroundImg(getClass().getResource("/background.png"));
+        JPanel panel = new JPanel();
         panel.setLayout(new MigLayout("fill,debug", "[][][]", "[1mm!][][]"));
         buildMiGForm(panel);
         return panel;
