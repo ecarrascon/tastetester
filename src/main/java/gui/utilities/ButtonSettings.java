@@ -6,9 +6,9 @@ import java.net.URL;
 import static javax.swing.JOptionPane.showMessageDialog;
 
 
-//Add img icons to the buttons(And the ExitButton) and clear the buttons background
+//Add img icons to the buttons and clear the buttons background
 public class ButtonSettings {
-    public static void prepareButton(JButton button, String url){
+    public static void prepareButton(JButton button, String url) {
         try {
             URL imgExit = ButtonSettings.class.getResource(url);
             button.setIcon(new ImageIcon(imgExit));

@@ -9,7 +9,7 @@ import java.io.IOException;
 
 
 public class TasteTester {
-
+    //Start the Main menu
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

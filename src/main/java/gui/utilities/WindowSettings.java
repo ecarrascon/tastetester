@@ -4,7 +4,7 @@ import java.awt.*;
 
 public class WindowSettings {
     //The window can be resized and moved
-    public static void prepareWindow(Window window){
+    public static void prepareWindow(Window window) {
         ComponentResizer resizer = new ComponentResizer();
         resizer.registerComponent(window);
         ComponentMover mover = new ComponentMover();

@@ -37,14 +37,14 @@ public class MoviesTester extends JDialog {
     private List<Movie> movieList;
     private boolean isUserOne;
 
-    public MoviesTester(){
+    public MoviesTester() {
         gson = new Gson();
         setTitle("MoviesTester");
-        //Making two players
+        //Making two players NumberOne is the left and NumberTwo is the right
         userNumberOne = SetUpUser.setUpUser(1);
         userNumberTwo = SetUpUser.setUpUser(2);
 
-
+        //The Api of Imdb
         imdbGetMovies = new ImdbMovies();
 
         //Window without borders
@@ -59,30 +59,33 @@ public class MoviesTester extends JDialog {
 
         setSize(1024, 1000);
         setLocationRelativeTo(null);
+
+        //Add all the components
         add(componentsMovies());
 
 
     }
 
     //Panel of the components
-    private JPanel componentsMovies(){
+    private JPanel componentsMovies() {
         JPanel panelMovie = new JPanel();
         panelMovie.setLayout(new MigLayout());
 
         //Exit Button
         JButton moviesButtonExit = new JButton();
         moviesButtonExit.addActionListener(new CloseListener());
+        ButtonSettings.prepareButton(moviesButtonExit, "/exit.png");
 
-        ButtonSettings.prepareButton(moviesButtonExit,"/exit.png");
-
+        //Adding all the "search movie" components to each user
+        //The text field
         searchMovieUserOne = new JTextField();
         searchMovieUserOne.addActionListener(new SearchTitle());
         searchMovieUserTwo = new JTextField();
         searchMovieUserTwo.addActionListener(new SearchTitle());
-
-        resultNumberOne = new JLabel(userNumberOne.getName()+" taste score: ");
-        resultNumberTwo = new JLabel(userNumberTwo.getName()+" taste score: ");
-
+        //Each score
+        resultNumberOne = new JLabel(userNumberOne.getName() + " taste score: ");
+        resultNumberTwo = new JLabel(userNumberTwo.getName() + " taste score: ");
+        //List to choose exact movie after searching title
         choooseMoviesUOne = new JList();
         choooseMoviesUOne.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         choooseMoviesUOne.addMouseListener(selectMovie);
@@ -97,17 +100,16 @@ public class MoviesTester extends JDialog {
         listModelUTwo = new DefaultListModel();
         choooseMoviesUTwo.setModel(listModelUTwo);
 
-        panelMovie.add(moviesButtonExit,"wrap");
-        panelMovie.add(searchMovieUserOne,"w 20:300:300,wrap");
-        panelMovie.add(choooseMoviesUOne,"wrap");
-        panelMovie.add(resultNumberOne,"wrap");
-        panelMovie.add(searchMovieUserTwo,"w 20:300:300,wrap");
-        panelMovie.add(choooseMoviesUTwo,"wrap");
+        panelMovie.add(moviesButtonExit, "wrap");
+        panelMovie.add(searchMovieUserOne, "w 20:300:300,wrap");
+        panelMovie.add(choooseMoviesUOne, "wrap");
+        panelMovie.add(resultNumberOne, "wrap");
+        panelMovie.add(searchMovieUserTwo, "w 20:300:300,wrap");
+        panelMovie.add(choooseMoviesUTwo, "wrap");
         panelMovie.add(resultNumberTwo);
 
         return panelMovie;
     }
-
 
 
     //Listener to exit everything
@@ -125,70 +127,50 @@ public class MoviesTester extends JDialog {
         public void actionPerformed(ActionEvent e) {
             try {
 
-                //We send the title to search
-                String movieTitle = imdbGetMovies.getMovie(((JTextField)e.getSource()).getText());
+                //Send the title to search
+                String movieTitle = imdbGetMovies.getMovie(((JTextField) e.getSource()).getText());
                 //Setup the Json data
-                String movieData = movieTitle.substring(movieTitle.indexOf("results")+9,
-                        movieTitle.indexOf("errorMessage")-2);
+                String movieData = movieTitle.substring(movieTitle.indexOf("results") + 9,
+                        movieTitle.indexOf("errorMessage") - 2);
                 //All the movies with that title (And similar)
-                java.lang.reflect.Type movieListType = new TypeToken<ArrayList<Movie>>(){}.getType();
+                java.lang.reflect.Type movieListType = new TypeToken<ArrayList<Movie>>() {
+                }.getType();
 
-                movieList = gson.fromJson(movieData,movieListType);
+                movieList = gson.fromJson(movieData, movieListType);
 
                 isUserOne = e.getSource() == searchMovieUserOne;
 
-                if (isUserOne){
+                if (isUserOne) {
+                    //Adding all the titles in the list
                     listModelUOne.clear();
-                    for (Movie movie: movieList){
+                    for (Movie movie : movieList) {
 
-                        listModelUOne.addElement(movie.getTitle()+" "+movie.getDescription());
+                        listModelUOne.addElement(movie.getTitle() + " " + movie.getDescription());
                     }
                 } else {
                     listModelUTwo.clear();
-                    for (Movie movie: movieList){
+                    for (Movie movie : movieList) {
 
-                        listModelUTwo.addElement(movie.getTitle()+" "+movie.getDescription());
+                        listModelUTwo.addElement(movie.getTitle() + " " + movie.getDescription());
                     }
                 }
 
             } catch (IOException ioException) {
-                showMessageDialog(null,"Error searching by title");
+                showMessageDialog(null, "Error searching by title");
             }
         }
-    }
-
-    //We have to find the rating by ID (We can't do it only by Title)
-    private void searchMovieRating(Movie movie){
-
-        try {
-            String movieIdFinder = imdbGetMovies.getRating(movie.getId());
-            Movie movieRating = gson.fromJson(movieIdFinder,Movie.class);
-            movie.setRating(movieRating.getImDb());
-            if (isUserOne){
-                userNumberOne.addMovieToUser(movie);
-                resultNumberOne.setText(userNumberOne.getName()+" taste score: "+ userNumberOne.ratingAverage());
-            } else {
-                userNumberTwo.addMovieToUser(movie);
-                resultNumberTwo.setText(userNumberTwo.getName()+" taste score: "+ userNumberTwo.ratingAverage());
-            }
-
-
-        } catch (IOException e) {
-            showMessageDialog(null,"Error searching by TitleID");
-        }
-
-
     }
 
     private final MouseListener selectMovie = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
+            //Select one title of the list send to check the rating and clear the list
             super.mouseClicked(e);
-            if (isUserOne){
+            if (isUserOne) {
                 searchMovieRating(movieList.get(choooseMoviesUOne.getSelectedIndex()));
                 listModelUOne.clear();
 
-            }else{
+            } else {
                 searchMovieRating(movieList.get(choooseMoviesUTwo.getSelectedIndex()));
                 listModelUTwo.clear();
             }
@@ -196,4 +178,30 @@ public class MoviesTester extends JDialog {
 
         }
     };
+
+    //We have to find the rating by ID (We can't do it only by Title)
+    private void searchMovieRating(Movie movie) {
+
+        try {
+            String movieIdFinder = imdbGetMovies.getRating(movie.getId());
+            Movie movieRating = gson.fromJson(movieIdFinder, Movie.class);
+            movie.setRating(movieRating.getImDb());
+            //The average of the rating is done in User.class
+            if (isUserOne) {
+                userNumberOne.addMovieToUser(movie);
+                resultNumberOne.setText(userNumberOne.getName() + " taste score: " + userNumberOne.ratingAverage());
+            } else {
+                userNumberTwo.addMovieToUser(movie);
+                resultNumberTwo.setText(userNumberTwo.getName() + " taste score: " + userNumberTwo.ratingAverage());
+            }
+
+
+        } catch (IOException e) {
+            showMessageDialog(null, "Error searching by TitleID");
+        }
+
+
+    }
+
+
 }

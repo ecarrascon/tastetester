@@ -54,12 +54,12 @@ public class Menu extends JFrame {
         JButton buttonBook = new JButton();
         */
 
-        ButtonSettings.prepareButton(buttonMovie,"/cinema.png");
+        ButtonSettings.prepareButton(buttonMovie, "/cinema.png");
         /*  Future features Rating music books etc
         ButtonSettings.prepareButton(buttonMusic,"/music.png");
         ButtonSettings.prepareButton(buttonBook,"/book.png");
          */
-        ButtonSettings.prepareButton(buttonExit,"/exit.png");
+        ButtonSettings.prepareButton(buttonExit, "/exit.png");
 
 
         //Exit Button added before Title
@@ -69,9 +69,8 @@ public class Menu extends JFrame {
         try {
             Font fontTitle = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/Voga-Medium.otf"));
             JLabel title = new JLabel("TasteTester", SwingConstants.CENTER);
-            title.setFont(fontTitle.deriveFont(125f));
+            title.setFont(fontTitle.deriveFont(Font.BOLD, 125f));
             title.setForeground(Color.BLACK);
-
 
 
             Font fontSubTitle = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/Voga-Medium.otf"));
@@ -81,9 +80,8 @@ public class Menu extends JFrame {
             subTitle.setForeground(Color.decode("#122c3b"));
 
 
-
             panel.add(title, "grow, span, wrap");
-            panel.add(subTitle,"grow, span, wrap");
+            panel.add(subTitle, "grow, span, wrap");
 
 
         } catch (IOException e) {
@@ -91,6 +89,7 @@ public class Menu extends JFrame {
         } catch (FontFormatException e) {
             showMessageDialog(null, "Font not found");
         }
+
 
         //Adding all the Buttons
         panel.add(buttonMovie, "align center, span");
@@ -103,8 +102,7 @@ public class Menu extends JFrame {
     }
 
     //Listener open Movies Tester Window
-    private class OpenMovieTester implements ActionListener{
-
+    private class OpenMovieTester implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             SwingUtilities.invokeLater(new Runnable() {
@@ -112,6 +110,7 @@ public class Menu extends JFrame {
                     MoviesTester moviesTester = new MoviesTester();
                     moviesTester.setVisible(true);
                     moviesTester.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                    Menu.this.setVisible(false);
                 }
             });
         }

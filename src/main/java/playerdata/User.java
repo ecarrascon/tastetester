@@ -13,16 +13,16 @@ public class User {
     }
 
     //Add one movie to the user
-    public void addMovieToUser(Movie movie){
+    public void addMovieToUser(Movie movie) {
         movies.add(movie);
     }
 
-    public double ratingAverage(){
+    public double ratingAverage() {
         double allRatings = 0;
-        for (Movie movie: movies){
+        for (Movie movie : movies) {
             allRatings += movie.getRating();
         }
-        return allRatings/movies.size();
+        return allRatings / movies.size();
     }
 
     public String getName() {
@@ -30,7 +30,7 @@ public class User {
     }
 
     //Get one saved movie
-    public Movie getMovieUser(int index){
+    public Movie getMovieUser(int index) {
         return movies.get(index);
     }
 

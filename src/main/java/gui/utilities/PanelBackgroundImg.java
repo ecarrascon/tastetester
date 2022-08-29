@@ -8,7 +8,6 @@ public class PanelBackgroundImg extends JPanel {
     private URL imgBg;
 
 
-
     public PanelBackgroundImg(URL imgBg) {
         this.imgBg = imgBg;
     }
