@@ -26,7 +26,7 @@ public class Menu extends JFrame {
         setIconImage(new ImageIcon(imgLogo).getImage());
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(1024, 1000);
+        setSize(871, 496);
         add(menuDistribution());
         setLocationRelativeTo(null);
 
@@ -35,7 +35,7 @@ public class Menu extends JFrame {
     //Base of Distribution of the components
     private JPanel menuDistribution() {
         JPanel panel = new JPanel();
-        panel.setLayout(new MigLayout("fill,debug", "[][][]", "[1mm!][][]"));
+        panel.setLayout(new MigLayout("fill", "[][][]", "[1mm!][][]"));
         buildMiGForm(panel);
         return panel;
     }
@@ -49,12 +49,16 @@ public class Menu extends JFrame {
         //The other buttons in the main menu
         JButton buttonMovie = new JButton();
         buttonMovie.addActionListener(new OpenMovieTester());
+        /* Future features Rating music books etc
         JButton buttonMusic = new JButton();
         JButton buttonBook = new JButton();
+        */
 
         ButtonSettings.prepareButton(buttonMovie,"/cinema.png");
+        /*  Future features Rating music books etc
         ButtonSettings.prepareButton(buttonMusic,"/music.png");
         ButtonSettings.prepareButton(buttonBook,"/book.png");
+         */
         ButtonSettings.prepareButton(buttonExit,"/exit.png");
 
 
@@ -76,9 +80,13 @@ public class Menu extends JFrame {
         }
 
         //Adding all the Buttons
-        panel.add(buttonMovie, "align center");
+        panel.add(buttonMovie, "align center,span");
+
+        /*  Future features Rating music books etc
         panel.add(buttonBook, "align center");
         panel.add(buttonMusic, "align center");
+         */
+
     }
 
     //Listener open Movies Tester Window
