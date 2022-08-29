@@ -12,7 +12,8 @@ Go to settings/ApyKeys.java, you will have to put your imdb key
 ```
 Now you can use it:
 
-![menu](https://user-images.githubusercontent.com/108543684/187305748-1e7cde50-7c81-4253-8eeb-b2bc9566d37f.PNG)
+![menu](https://user-images.githubusercontent.com/108543684/187306081-b58df3ae-ba5b-4ab1-a8d2-2ce35a881a8a.png)
+
 ![movies](https://user-images.githubusercontent.com/108543684/187305765-4a14f15d-54d9-4564-955a-2996bd07ed24.png)
 
 ## Get your IMDb Key
