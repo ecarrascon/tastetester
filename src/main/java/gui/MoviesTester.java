@@ -239,7 +239,7 @@ public class MoviesTester extends JFrame {
     private void enterKeyAndUsers() {
         //Setup Key
         boolean close = false;
-        ApiKeys.setImdbKey("SetUpYourKey");
+        ApiKeys.setImdbKey("YourKey");
         while (!close && (ApiKeys.getImdbKey() == null || !ApiKeys.imdbKey.startsWith("k"))) {
             if (ApiKeys.getImdbKey() == null) {
                 int exitMoviesTester = showConfirmDialog(null, "Are you sure that you want to not enter MoviesTester?", "", YES_NO_OPTION);
