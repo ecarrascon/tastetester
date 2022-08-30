@@ -9,6 +9,7 @@ import playerdata.User;
 
 import movies.ImdbMovies;
 import net.miginfocom.swing.MigLayout;
+import settings.ApiKeys;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.JOptionPane.*;
 
 public class MoviesTester extends JFrame {
     private JList choooseMoviesUOne;
@@ -39,8 +40,14 @@ public class MoviesTester extends JFrame {
     private List<Movie> movieList;
     private boolean isUserOne;
     private Menu menu;
+    private JPanel panelMovie;
+    private Boolean moviesMenuVisible = true;
+    private Boolean menuVisible = false;
+
     public MoviesTester(Menu menu) {
         this.menu = menu;
+
+        cancelEnterApi();
 
         setBackground(Color.WHITE);
         gson = new Gson();
@@ -73,7 +80,7 @@ public class MoviesTester extends JFrame {
 
     //Panel of the components
     private JPanel componentsMovies() {
-        JPanel panelMovie = new JPanel();
+        panelMovie = new JPanel();
         panelMovie.setLayout(new MigLayout());
         panelMovie.setBackground(Color.WHITE);
         //Exit Button
@@ -164,6 +171,7 @@ public class MoviesTester extends JFrame {
                     for (Movie movie : movieList) {
 
                         listModelUOne.addElement(movie.getTitle() + " " + movie.getDescription());
+                        JLabel titleMovie = new JLabel(movie.getTitle());
                     }
                 } else {
                     listModelUTwo.clear();
@@ -196,9 +204,9 @@ public class MoviesTester extends JFrame {
 
             //Changing the winner
             if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingAverage() > userNumberTwo.ratingAverage()) {
-                infoAndWinner.setText("<html><center>" + userNumberOne.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f",userNumberOne.ratingAverage()) + "</html>");
+                infoAndWinner.setText("<html><center>" + userNumberOne.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberOne.ratingAverage()) + "</html>");
             } else if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingAverage() < userNumberTwo.ratingAverage()) {
-                infoAndWinner.setText("<html><center>" + userNumberTwo.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f",userNumberTwo.ratingAverage()) + "</html>");
+                infoAndWinner.setText("<html><center>" + userNumberTwo.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberTwo.ratingAverage()) + "</html>");
 
             } else {
                 infoAndWinner.setText("<html><center>Each user have to search <br> the same number of movies</html>");
@@ -218,6 +226,7 @@ public class MoviesTester extends JFrame {
             if (isUserOne) {
                 userNumberOne.addMovieToUser(movie);
                 resultNumberOne.setText(userNumberOne.getName() + " taste score: " + String.format("%.2f", userNumberOne.ratingAverage()));
+
             } else {
                 userNumberTwo.addMovieToUser(movie);
                 resultNumberTwo.setText(userNumberTwo.getName() + " taste score: " + String.format("%.2f", userNumberTwo.ratingAverage()));
@@ -231,5 +240,30 @@ public class MoviesTester extends JFrame {
 
     }
 
+    private void cancelEnterApi(){
+        //Setup Key
+        ApiKeys.setImdbKey("");
+        if (!(ApiKeys.imdbKey.startsWith("k"))) {
+            while (ApiKeys.getImdbKey() == null || !ApiKeys.imdbKey.startsWith("k")) {
+                if (ApiKeys.getImdbKey() == null) {
+                    int exitMoviesTester = showConfirmDialog(null, "Are you sure that you want to not enter MoviesTester?", "", YES_NO_OPTION);
+                    if (exitMoviesTester == YES_OPTION) {
+                        moviesMenuVisible = false;
+                        menuVisible = true;
+                        ApiKeys.setImdbKey("k");
+                    }
+                } else {
+                    ApiKeys.setImdbKey(showInputDialog("Insert your IMDb-Api key"));
+                }
+            }
+        }
+    }
 
+    public Boolean getMoviesMenuVisible() {
+        return moviesMenuVisible;
+    }
+
+    public Boolean getMenuVisible() {
+        return menuVisible;
+    }
 }

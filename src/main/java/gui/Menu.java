@@ -108,9 +108,11 @@ public class Menu extends JFrame {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     MoviesTester moviesTester = new MoviesTester(Menu.this);
-                    moviesTester.setVisible(true);
+                    moviesTester.setVisible(moviesTester.getMoviesMenuVisible());
                     moviesTester.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-                    Menu.this.setVisible(false);
+                    Menu.this.setVisible(moviesTester.getMenuVisible());
+
+
                 }
             });
         }
