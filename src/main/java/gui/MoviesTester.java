@@ -15,10 +15,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static javax.swing.JOptionPane.*;
@@ -47,14 +45,12 @@ public class MoviesTester extends JFrame {
     public MoviesTester(Menu menu) {
         this.menu = menu;
 
-        cancelEnterApi();
+        enterKeyAndUsers();
 
         setBackground(Color.WHITE);
         gson = new Gson();
         setTitle("MoviesTester");
-        //Making two players NumberOne is the left and NumberTwo is the right
-        userNumberOne = SetUpUser.setUpUser(1);
-        userNumberTwo = SetUpUser.setUpUser(2);
+
 
         //The Api of Imdb
         imdbGetMovies = new ImdbMovies();
@@ -240,23 +236,34 @@ public class MoviesTester extends JFrame {
 
     }
 
-    private void cancelEnterApi(){
+    private void enterKeyAndUsers() {
         //Setup Key
-        ApiKeys.setImdbKey("");
-        if (!(ApiKeys.imdbKey.startsWith("k"))) {
-            while (ApiKeys.getImdbKey() == null || !ApiKeys.imdbKey.startsWith("k")) {
-                if (ApiKeys.getImdbKey() == null) {
-                    int exitMoviesTester = showConfirmDialog(null, "Are you sure that you want to not enter MoviesTester?", "", YES_NO_OPTION);
-                    if (exitMoviesTester == YES_OPTION) {
-                        moviesMenuVisible = false;
-                        menuVisible = true;
-                        ApiKeys.setImdbKey("k");
-                    }
-                } else {
-                    ApiKeys.setImdbKey(showInputDialog("Insert your IMDb-Api key"));
+        boolean close = false;
+        ApiKeys.setImdbKey("SetUpYourKey");
+        while (!close && (ApiKeys.getImdbKey() == null || !ApiKeys.imdbKey.startsWith("k"))) {
+            if (ApiKeys.getImdbKey() == null) {
+                int exitMoviesTester = showConfirmDialog(null, "Are you sure that you want to not enter MoviesTester?", "", YES_NO_OPTION);
+                if (exitMoviesTester == YES_OPTION) {
+                    moviesMenuVisible = false;
+                    menuVisible = true;
+                    close = true;
                 }
+            } else {
+                ApiKeys.setImdbKey(showInputDialog("Insert your IMDb-Api key"));
             }
         }
+
+        if (!(ApiKeys.getImdbKey() == null) && ApiKeys.getImdbKey().startsWith("k")) {
+            //Making two players, NumberOne is the left and NumberTwo is the right
+            userNumberOne = SetUpUser.setUpUser(1);
+            userNumberTwo = SetUpUser.setUpUser(2);
+        } else {
+            userNumberOne = SetUpUser.setUpUser("deficere");
+            userNumberTwo = SetUpUser.setUpUser("deficere");
+        }
+
+
+
     }
 
     public Boolean getMoviesMenuVisible() {
