@@ -34,7 +34,7 @@ public class Menu extends JFrame {
     //Base of Distribution of the components
     private JPanel menuDistribution() {
         JPanel panel = new JPanel();
-
+        panel.setBackground(Color.white);
         panel.setLayout(new MigLayout(" fill", "[][][]", "[1mm!][][]"));
         buildMiGForm(panel);
         return panel;
@@ -107,9 +107,9 @@ public class Menu extends JFrame {
         public void actionPerformed(ActionEvent e) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    MoviesTester moviesTester = new MoviesTester();
+                    MoviesTester moviesTester = new MoviesTester(Menu.this);
                     moviesTester.setVisible(true);
-                    moviesTester.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                    moviesTester.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
                     Menu.this.setVisible(false);
                 }
             });

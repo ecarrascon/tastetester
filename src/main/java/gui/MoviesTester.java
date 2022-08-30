@@ -22,7 +22,7 @@ import java.util.List;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
-public class MoviesTester extends JDialog {
+public class MoviesTester extends JFrame {
     private JList choooseMoviesUOne;
     private DefaultListModel listModelUOne;
     private JList choooseMoviesUTwo;
@@ -38,8 +38,10 @@ public class MoviesTester extends JDialog {
     private Gson gson;
     private List<Movie> movieList;
     private boolean isUserOne;
+    private Menu menu;
+    public MoviesTester(Menu menu) {
+        this.menu = menu;
 
-    public MoviesTester() {
         setBackground(Color.WHITE);
         gson = new Gson();
         setTitle("MoviesTester");
@@ -131,7 +133,8 @@ public class MoviesTester extends JDialog {
     private class CloseListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.exit(0);
+            MoviesTester.this.setVisible(false);
+            menu.setVisible(true);
         }
     }
 
