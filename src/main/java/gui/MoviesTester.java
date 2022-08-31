@@ -36,11 +36,10 @@ public class MoviesTester extends JFrame {
     private final ImdbMovies imdbGetMovies;
     private User userNumberOne;
     private User userNumberTwo;
-    private Gson gson;
+    private final Gson gson;
     private List<Movie> movieList;
     private boolean isUserOne;
-    private Menu menu;
-    private JPanel panelMovie;
+    private final Menu menu;
     private Boolean moviesMenuVisible = true;
     private Boolean menuVisible = false;
 
@@ -53,7 +52,6 @@ public class MoviesTester extends JFrame {
         gson = new Gson();
         setTitle("MoviesTester");
 
-
         //The Api of Imdb
         imdbGetMovies = new ImdbMovies();
 
@@ -65,6 +63,7 @@ public class MoviesTester extends JFrame {
 
         //Window's ImgIco
         URL imgLogo = getClass().getResource("/logo.png");
+        assert imgLogo != null : "No window's logo found";
         setIconImage(new ImageIcon(imgLogo).getImage());
 
         setSize(670, 300);
@@ -72,14 +71,12 @@ public class MoviesTester extends JFrame {
 
         //Add all the components
         add(componentsMovies());
-
-
     }
 
     //Panel of the components
     private JPanel componentsMovies() {
         //Setting the Panel
-        panelMovie = new JPanel();
+        JPanel panelMovie = new JPanel();
         panelMovie.setLayout(new MigLayout());
         panelMovie.setBackground(Color.WHITE);
 
@@ -136,7 +133,6 @@ public class MoviesTester extends JFrame {
         panelMovie.add(selectedMoviesUserOne);
         panelMovie.add(selectedMoviesUserTwo, "gapleft 223");
 
-
         return panelMovie;
     }
 
@@ -152,11 +148,9 @@ public class MoviesTester extends JFrame {
 
     //Search the title to get the ID, is needed for search the rating
     private class SearchTitle implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-
                 //Send the title to search
                 String movieTitle = imdbGetMovies.getMovie(((JTextField) e.getSource()).getText());
                 //Setup the Json data
@@ -169,21 +163,16 @@ public class MoviesTester extends JFrame {
                 movieList = gson.fromJson(movieData, movieListType);
 
                 isUserOne = e.getSource() == searchMovieUserOne;
-
                 if (isUserOne) {
                     //Adding all the titles in the list
                     listModelUOne.clear();
                     for (Movie movie : movieList) {
-
                         listModelUOne.addElement(movie.getTitle() + " " + movie.getDescription());
-
                     }
                 } else {
                     listModelUTwo.clear();
                     for (Movie movie : movieList) {
-
                         listModelUTwo.addElement(movie.getTitle() + " " + movie.getDescription());
-
                     }
                 }
 
@@ -222,7 +211,6 @@ public class MoviesTester extends JFrame {
 
     //We have to find the rating by ID (We can't do it only by Title)
     private void searchMovieRating(Movie movie) {
-
         try {
             String movieIdFinder = imdbGetMovies.getRating(movie.getId());
             Movie movieRating = gson.fromJson(movieIdFinder, Movie.class);
@@ -232,20 +220,14 @@ public class MoviesTester extends JFrame {
                 userNumberOne.addMovieToUser(movie);
                 resultNumberOne.setText(userNumberOne.getName() + " taste score: " + String.format("%.2f", userNumberOne.ratingAverage()));
                 selectedMoviesUserOne.setText("<html>" + selectedMoviesUserOne.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + " " + movie.getDescription() + "</html>");
-
             } else {
                 userNumberTwo.addMovieToUser(movie);
                 resultNumberTwo.setText(userNumberTwo.getName() + " taste score: " + String.format("%.2f", userNumberTwo.ratingAverage()));
                 selectedMoviesUserTwo.setText("<html>" + selectedMoviesUserTwo.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + " " + movie.getDescription() + "</html>");
-
             }
-
-
         } catch (IOException e) {
             showMessageDialog(null, "Error searching by TitleID");
         }
-
-
     }
 
     private void enterKeyAndUsers() {
@@ -265,16 +247,14 @@ public class MoviesTester extends JFrame {
             }
         }
 
+        //Making two players, NumberOne is the left and NumberTwo is the right
         if (!(ApiKeys.getImdbKey() == null) && ApiKeys.getImdbKey().startsWith("k")) {
-            //Making two players, NumberOne is the left and NumberTwo is the right
             userNumberOne = SetUpUser.setUpUser(1);
             userNumberTwo = SetUpUser.setUpUser(2);
         } else {
             userNumberOne = new User("deficere");
             userNumberTwo = new User("deficere");
         }
-
-
     }
 
     public Boolean getMoviesMenuVisible() {
