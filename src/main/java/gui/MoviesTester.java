@@ -213,7 +213,6 @@ public class MoviesTester extends JFrame {
                 infoAndWinner.setText("<html><center>" + userNumberOne.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberOne.ratingAverage()) + "</html>");
             } else if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingAverage() < userNumberTwo.ratingAverage()) {
                 infoAndWinner.setText("<html><center>" + userNumberTwo.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberTwo.ratingAverage()) + "</html>");
-
             } else {
                 infoAndWinner.setText("<html><center>Each user have to search <br> the same number of movies</html>");
             }
@@ -232,12 +231,13 @@ public class MoviesTester extends JFrame {
             if (isUserOne) {
                 userNumberOne.addMovieToUser(movie);
                 resultNumberOne.setText(userNumberOne.getName() + " taste score: " + String.format("%.2f", userNumberOne.ratingAverage()));
-                selectedMoviesUserOne.setText("<html>" + selectedMoviesUserOne.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + "</html>");
+                selectedMoviesUserOne.setText("<html>" + selectedMoviesUserOne.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + " " + movie.getDescription() + "</html>");
 
             } else {
                 userNumberTwo.addMovieToUser(movie);
                 resultNumberTwo.setText(userNumberTwo.getName() + " taste score: " + String.format("%.2f", userNumberTwo.ratingAverage()));
-                selectedMoviesUserTwo.setText("<html>" + selectedMoviesUserTwo.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + "</html>");
+                selectedMoviesUserTwo.setText("<html>" + selectedMoviesUserTwo.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + " " + movie.getDescription() + "</html>");
+
             }
 
 
