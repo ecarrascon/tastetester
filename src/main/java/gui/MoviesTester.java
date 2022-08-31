@@ -29,6 +29,8 @@ public class MoviesTester extends JFrame {
     private JLabel infoAndWinner;
     private JLabel resultNumberOne;
     private JLabel resultNumberTwo;
+    private JLabel selectedMoviesUserOne;
+    private JLabel selectedMoviesUserTwo;
     private JTextField searchMovieUserOne;
     private JTextField searchMovieUserTwo;
     private final ImdbMovies imdbGetMovies;
@@ -76,13 +78,20 @@ public class MoviesTester extends JFrame {
 
     //Panel of the components
     private JPanel componentsMovies() {
+        //Setting the Panel
         panelMovie = new JPanel();
         panelMovie.setLayout(new MigLayout());
         panelMovie.setBackground(Color.WHITE);
+
         //Exit Button
         JButton moviesButtonExit = new JButton();
         moviesButtonExit.addActionListener(new CloseListener());
         ButtonSettings.prepareButton(moviesButtonExit, "/exit.png");
+
+        //Info about the rules. And the winner
+        infoAndWinner = new JLabel("<html><center>Each user have to search <br> the same number of movies</html>");
+        infoAndWinner.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
+        infoAndWinner.setForeground(Color.BLACK);
 
         //Adding all the "search movie" components to each user
         //The text field
@@ -112,11 +121,9 @@ public class MoviesTester extends JFrame {
         listModelUTwo = new DefaultListModel();
         choooseMoviesUTwo.setModel(listModelUTwo);
 
-        //Info about the rules. And the winner
-
-        infoAndWinner = new JLabel("<html><center>Each user have to search <br> the same number of movies</html>");
-        infoAndWinner.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
-        infoAndWinner.setForeground(Color.BLACK);
+        //Showing the movies selected
+        selectedMoviesUserOne = new JLabel();
+        selectedMoviesUserTwo = new JLabel();
 
         panelMovie.add(moviesButtonExit);
         panelMovie.add(infoAndWinner, "wrap, gapleft 12");
@@ -125,7 +132,9 @@ public class MoviesTester extends JFrame {
         panelMovie.add(choooseMoviesUOne, "w 20:286:286");
         panelMovie.add(choooseMoviesUTwo, "wrap, gapleft 223");
         panelMovie.add(resultNumberOne);
-        panelMovie.add(resultNumberTwo, "gapleft 223");
+        panelMovie.add(resultNumberTwo, "gapleft 223, wrap");
+        panelMovie.add(selectedMoviesUserOne);
+        panelMovie.add(selectedMoviesUserTwo, "gapleft 223");
 
 
         return panelMovie;
@@ -167,13 +176,14 @@ public class MoviesTester extends JFrame {
                     for (Movie movie : movieList) {
 
                         listModelUOne.addElement(movie.getTitle() + " " + movie.getDescription());
-                        JLabel titleMovie = new JLabel(movie.getTitle());
+
                     }
                 } else {
                     listModelUTwo.clear();
                     for (Movie movie : movieList) {
 
                         listModelUTwo.addElement(movie.getTitle() + " " + movie.getDescription());
+
                     }
                 }
 
@@ -222,10 +232,12 @@ public class MoviesTester extends JFrame {
             if (isUserOne) {
                 userNumberOne.addMovieToUser(movie);
                 resultNumberOne.setText(userNumberOne.getName() + " taste score: " + String.format("%.2f", userNumberOne.ratingAverage()));
+                selectedMoviesUserOne.setText("<html>" + selectedMoviesUserOne.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + "</html>");
 
             } else {
                 userNumberTwo.addMovieToUser(movie);
                 resultNumberTwo.setText(userNumberTwo.getName() + " taste score: " + String.format("%.2f", userNumberTwo.ratingAverage()));
+                selectedMoviesUserTwo.setText("<html>" + selectedMoviesUserTwo.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + "</html>");
             }
 
 
@@ -258,10 +270,9 @@ public class MoviesTester extends JFrame {
             userNumberOne = SetUpUser.setUpUser(1);
             userNumberTwo = SetUpUser.setUpUser(2);
         } else {
-            userNumberOne = SetUpUser.setUpUser("deficere");
-            userNumberTwo = SetUpUser.setUpUser("deficere");
+            userNumberOne = new User("deficere");
+            userNumberTwo = new User("deficere");
         }
-
 
 
     }
