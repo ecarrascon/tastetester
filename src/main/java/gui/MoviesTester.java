@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -232,23 +233,40 @@ public class MoviesTester extends JFrame {
 
     private void enterKeyAndUsers() {
         //Setup Key
-        boolean close = false;
-        ApiKeys.setImdbKey("YourKey");
-        while (!close && (ApiKeys.getImdbKey() == null || !ApiKeys.imdbKey.startsWith("k"))) {
-            if (ApiKeys.getImdbKey() == null) {
-                int exitMoviesTester = showConfirmDialog(null, "Are you sure that you want to not enter MoviesTester?", "", YES_NO_OPTION);
-                if (exitMoviesTester == YES_OPTION) {
-                    moviesMenuVisible = false;
-                    menuVisible = true;
-                    close = true;
-                }
-            } else {
-                ApiKeys.setImdbKey(showInputDialog("Insert your IMDb-Api key"));
+        try {
+            if (!(ApiKeys.getKeysFile().createNewFile())){
+                ApiKeys.setImdbKey(Files.readString(ApiKeys.getKeysFile().toPath()));
             }
+        } catch (IOException e) {
+            showMessageDialog(null, "Error creating file");
         }
+
+        try {
+            if (Files.readString(ApiKeys.getKeysFile().toPath()) == null || !(Files.readString(ApiKeys.getKeysFile().toPath()).startsWith("k"))){
+                boolean close = false;
+                ApiKeys.setImdbKey("YourKey");
+                while (!close && (ApiKeys.getImdbKey() == null || !ApiKeys.imdbKey.startsWith("k"))) {
+                    if (ApiKeys.getImdbKey() == null) {
+                        int exitMoviesTester = showConfirmDialog(null, "Are you sure that you want to not enter MoviesTester?", "", YES_NO_OPTION);
+                        if (exitMoviesTester == YES_OPTION) {
+                            moviesMenuVisible = false;
+                            menuVisible = true;
+                            close = true;
+                        }
+                    } else {
+                        ApiKeys.setImdbKey(showInputDialog("Insert your IMDb-Api key"));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            showMessageDialog(null, "Error finding file");
+        }
+
 
         //Making two players, NumberOne is the left and NumberTwo is the right
         if (!(ApiKeys.getImdbKey() == null) && ApiKeys.getImdbKey().startsWith("k")) {
+            ApiKeys.writeKey(ApiKeys.getImdbKey());
+
             userNumberOne = SetUpUser.setUpUser(1);
             userNumberTwo = SetUpUser.setUpUser(2);
         } else {
