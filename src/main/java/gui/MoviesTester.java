@@ -9,20 +9,19 @@ import playerdata.User;
 
 import movies.ImdbMovies;
 import net.miginfocom.swing.MigLayout;
+import settings.ApiKeys;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.JOptionPane.*;
 
-public class MoviesTester extends JDialog {
+public class MoviesTester extends JFrame {
     private JList choooseMoviesUOne;
     private DefaultListModel listModelUOne;
     private JList choooseMoviesUTwo;
@@ -30,22 +29,28 @@ public class MoviesTester extends JDialog {
     private JLabel infoAndWinner;
     private JLabel resultNumberOne;
     private JLabel resultNumberTwo;
+    private JLabel selectedMoviesUserOne;
+    private JLabel selectedMoviesUserTwo;
     private JTextField searchMovieUserOne;
     private JTextField searchMovieUserTwo;
     private final ImdbMovies imdbGetMovies;
     private User userNumberOne;
     private User userNumberTwo;
-    private Gson gson;
+    private final Gson gson;
     private List<Movie> movieList;
     private boolean isUserOne;
+    private final Menu menu;
+    private Boolean moviesMenuVisible = true;
+    private Boolean menuVisible = false;
 
-    public MoviesTester() {
+    public MoviesTester(Menu menu) {
+        this.menu = menu;
+
+        enterKeyAndUsers();
+
         setBackground(Color.WHITE);
         gson = new Gson();
         setTitle("MoviesTester");
-        //Making two players NumberOne is the left and NumberTwo is the right
-        userNumberOne = SetUpUser.setUpUser(1);
-        userNumberTwo = SetUpUser.setUpUser(2);
 
         //The Api of Imdb
         imdbGetMovies = new ImdbMovies();
@@ -58,6 +63,7 @@ public class MoviesTester extends JDialog {
 
         //Window's ImgIco
         URL imgLogo = getClass().getResource("/logo.png");
+        assert imgLogo != null : "No window's logo found";
         setIconImage(new ImageIcon(imgLogo).getImage());
 
         setSize(670, 300);
@@ -65,19 +71,24 @@ public class MoviesTester extends JDialog {
 
         //Add all the components
         add(componentsMovies());
-
-
     }
 
     //Panel of the components
     private JPanel componentsMovies() {
+        //Setting the Panel
         JPanel panelMovie = new JPanel();
         panelMovie.setLayout(new MigLayout());
         panelMovie.setBackground(Color.WHITE);
+
         //Exit Button
         JButton moviesButtonExit = new JButton();
         moviesButtonExit.addActionListener(new CloseListener());
         ButtonSettings.prepareButton(moviesButtonExit, "/exit.png");
+
+        //Info about the rules. And the winner
+        infoAndWinner = new JLabel("<html><center>Each user have to search <br> the same number of movies</html>");
+        infoAndWinner.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
+        infoAndWinner.setForeground(Color.BLACK);
 
         //Adding all the "search movie" components to each user
         //The text field
@@ -107,11 +118,9 @@ public class MoviesTester extends JDialog {
         listModelUTwo = new DefaultListModel();
         choooseMoviesUTwo.setModel(listModelUTwo);
 
-        //Info about the rules. And the winner
-
-        infoAndWinner = new JLabel("<html><center>Each user have to search <br> the same number of movies</html>");
-        infoAndWinner.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
-        infoAndWinner.setForeground(Color.BLACK);
+        //Showing the movies selected
+        selectedMoviesUserOne = new JLabel();
+        selectedMoviesUserTwo = new JLabel();
 
         panelMovie.add(moviesButtonExit);
         panelMovie.add(infoAndWinner, "wrap, gapleft 12");
@@ -120,8 +129,9 @@ public class MoviesTester extends JDialog {
         panelMovie.add(choooseMoviesUOne, "w 20:286:286");
         panelMovie.add(choooseMoviesUTwo, "wrap, gapleft 223");
         panelMovie.add(resultNumberOne);
-        panelMovie.add(resultNumberTwo, "gapleft 223");
-
+        panelMovie.add(resultNumberTwo, "gapleft 223, wrap");
+        panelMovie.add(selectedMoviesUserOne);
+        panelMovie.add(selectedMoviesUserTwo, "gapleft 223");
 
         return panelMovie;
     }
@@ -131,17 +141,16 @@ public class MoviesTester extends JDialog {
     private class CloseListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.exit(0);
+            MoviesTester.this.setVisible(false);
+            menu.setVisible(true);
         }
     }
 
     //Search the title to get the ID, is needed for search the rating
     private class SearchTitle implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-
                 //Send the title to search
                 String movieTitle = imdbGetMovies.getMovie(((JTextField) e.getSource()).getText());
                 //Setup the Json data
@@ -154,18 +163,15 @@ public class MoviesTester extends JDialog {
                 movieList = gson.fromJson(movieData, movieListType);
 
                 isUserOne = e.getSource() == searchMovieUserOne;
-
                 if (isUserOne) {
                     //Adding all the titles in the list
                     listModelUOne.clear();
                     for (Movie movie : movieList) {
-
                         listModelUOne.addElement(movie.getTitle() + " " + movie.getDescription());
                     }
                 } else {
                     listModelUTwo.clear();
                     for (Movie movie : movieList) {
-
                         listModelUTwo.addElement(movie.getTitle() + " " + movie.getDescription());
                     }
                 }
@@ -193,10 +199,9 @@ public class MoviesTester extends JDialog {
 
             //Changing the winner
             if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingAverage() > userNumberTwo.ratingAverage()) {
-                infoAndWinner.setText("<html><center>" + userNumberOne.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f",userNumberOne.ratingAverage()) + "</html>");
+                infoAndWinner.setText("<html><center>" + userNumberOne.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberOne.ratingAverage()) + "</html>");
             } else if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingAverage() < userNumberTwo.ratingAverage()) {
-                infoAndWinner.setText("<html><center>" + userNumberTwo.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f",userNumberTwo.ratingAverage()) + "</html>");
-
+                infoAndWinner.setText("<html><center>" + userNumberTwo.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberTwo.ratingAverage()) + "</html>");
             } else {
                 infoAndWinner.setText("<html><center>Each user have to search <br> the same number of movies</html>");
             }
@@ -206,7 +211,6 @@ public class MoviesTester extends JDialog {
 
     //We have to find the rating by ID (We can't do it only by Title)
     private void searchMovieRating(Movie movie) {
-
         try {
             String movieIdFinder = imdbGetMovies.getRating(movie.getId());
             Movie movieRating = gson.fromJson(movieIdFinder, Movie.class);
@@ -215,18 +219,49 @@ public class MoviesTester extends JDialog {
             if (isUserOne) {
                 userNumberOne.addMovieToUser(movie);
                 resultNumberOne.setText(userNumberOne.getName() + " taste score: " + String.format("%.2f", userNumberOne.ratingAverage()));
+                selectedMoviesUserOne.setText("<html>" + selectedMoviesUserOne.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + " " + movie.getDescription() + "</html>");
             } else {
                 userNumberTwo.addMovieToUser(movie);
                 resultNumberTwo.setText(userNumberTwo.getName() + " taste score: " + String.format("%.2f", userNumberTwo.ratingAverage()));
+                selectedMoviesUserTwo.setText("<html>" + selectedMoviesUserTwo.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + " " + movie.getDescription() + "</html>");
             }
-
-
         } catch (IOException e) {
             showMessageDialog(null, "Error searching by TitleID");
         }
-
-
     }
 
+    private void enterKeyAndUsers() {
+        //Setup Key
+        boolean close = false;
+        ApiKeys.setImdbKey("YourKey");
+        while (!close && (ApiKeys.getImdbKey() == null || !ApiKeys.imdbKey.startsWith("k"))) {
+            if (ApiKeys.getImdbKey() == null) {
+                int exitMoviesTester = showConfirmDialog(null, "Are you sure that you want to not enter MoviesTester?", "", YES_NO_OPTION);
+                if (exitMoviesTester == YES_OPTION) {
+                    moviesMenuVisible = false;
+                    menuVisible = true;
+                    close = true;
+                }
+            } else {
+                ApiKeys.setImdbKey(showInputDialog("Insert your IMDb-Api key"));
+            }
+        }
 
+        //Making two players, NumberOne is the left and NumberTwo is the right
+        if (!(ApiKeys.getImdbKey() == null) && ApiKeys.getImdbKey().startsWith("k")) {
+            userNumberOne = SetUpUser.setUpUser(1);
+            userNumberTwo = SetUpUser.setUpUser(2);
+        } else {
+            userNumberOne = new User("deficere");
+            userNumberTwo = new User("deficere");
+        }
+    }
+
+    public Boolean getMoviesMenuVisible() {
+        return moviesMenuVisible;
+    }
+
+    public Boolean getMenuVisible() {
+        return menuVisible;
+    }
 }

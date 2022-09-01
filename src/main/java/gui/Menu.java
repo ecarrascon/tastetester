@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 
 public class Menu extends JFrame {
     //App Menu, select mode window
@@ -22,6 +23,7 @@ public class Menu extends JFrame {
 
         //Window's ImgIco
         URL imgLogo = getClass().getResource("/logo.png");
+        assert imgLogo != null : "Logo not found";
         setIconImage(new ImageIcon(imgLogo).getImage());
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -34,7 +36,7 @@ public class Menu extends JFrame {
     //Base of Distribution of the components
     private JPanel menuDistribution() {
         JPanel panel = new JPanel();
-
+        panel.setBackground(Color.white);
         panel.setLayout(new MigLayout(" fill", "[][][]", "[1mm!][][]"));
         buildMiGForm(panel);
         return panel;
@@ -67,13 +69,13 @@ public class Menu extends JFrame {
 
         //Adding Font and Title
         try {
-            Font fontTitle = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/Voga-Medium.otf"));
+            Font fontTitle = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(getClass().getResourceAsStream("/Voga-Medium.otf")));
             JLabel title = new JLabel("TasteTester", SwingConstants.CENTER);
             title.setFont(fontTitle.deriveFont(Font.BOLD, 125f));
             title.setForeground(Color.BLACK);
 
 
-            Font fontSubTitle = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/Voga-Medium.otf"));
+            Font fontSubTitle = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(getClass().getResourceAsStream("/Voga-Medium.otf")));
             GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(fontSubTitle);
             JLabel subTitle = new JLabel("<html><center><b>Welcome! Click the movie's button to test your taste <br/> You can do it alone or with a friend. Who will have a better taste? Good luck! </b> </html>", SwingConstants.CENTER);
             subTitle.setFont(fontSubTitle.deriveFont(34f));
@@ -84,9 +86,7 @@ public class Menu extends JFrame {
             panel.add(subTitle, "grow, span, wrap");
 
 
-        } catch (IOException e) {
-            showMessageDialog(null, "Font not found");
-        } catch (FontFormatException e) {
+        } catch (IOException | FontFormatException e) {
             showMessageDialog(null, "Font not found");
         }
 
@@ -105,19 +105,17 @@ public class Menu extends JFrame {
     private class OpenMovieTester implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    MoviesTester moviesTester = new MoviesTester();
-                    moviesTester.setVisible(true);
-                    moviesTester.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-                    Menu.this.setVisible(false);
-                }
+            SwingUtilities.invokeLater(() -> {
+                MoviesTester moviesTester = new MoviesTester(Menu.this);
+                moviesTester.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+                moviesTester.setVisible(moviesTester.getMoviesMenuVisible());
+                Menu.this.setVisible(moviesTester.getMenuVisible());
             });
         }
     }
 
     //Listener to exit everything
-    private class CloseListener implements ActionListener {
+    private static class CloseListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.exit(0);

@@ -7,4 +7,5 @@ public class SetUpUser {
     public static User setUpUser(int numberPlayer) {
         return new User(JOptionPane.showInputDialog("Name of user number " + numberPlayer));
     }
+
 }
