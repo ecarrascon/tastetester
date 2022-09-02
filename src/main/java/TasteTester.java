@@ -1,11 +1,6 @@
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import gui.Menu;
-import movies.ImdbMovies;
-import playerdata.Movie;
 
 import javax.swing.*;
-import java.io.IOException;
 
 
 public class TasteTester {

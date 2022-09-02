@@ -2,7 +2,7 @@ package playerdata;
 
 public class Movie {
 
-    //Movie attributes
+    //Movie attributes given by IMDbApi
     private String title;
     private String id;
     private Double rating;

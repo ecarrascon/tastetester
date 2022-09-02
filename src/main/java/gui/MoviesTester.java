@@ -7,7 +7,7 @@ import playerdata.Movie;
 import playerdata.SetUpUser;
 import playerdata.User;
 
-import movies.ImdbMovies;
+import apis.Imdb;
 import net.miginfocom.swing.MigLayout;
 import settings.ApiKeys;
 
@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class MoviesTester extends JFrame {
     private JLabel selectedMoviesUserTwo;
     private JTextField searchMovieUserOne;
     private JTextField searchMovieUserTwo;
-    private final ImdbMovies imdbGetMovies;
+    private final Imdb imdbGetMovies;
     private User userNumberOne;
     private User userNumberTwo;
     private final Gson gson;
@@ -53,7 +54,7 @@ public class MoviesTester extends JFrame {
         setTitle("MoviesTester");
 
         //The Api of Imdb
-        imdbGetMovies = new ImdbMovies();
+        imdbGetMovies = new Imdb();
 
         //Window without borders
         setUndecorated(true);
@@ -80,10 +81,14 @@ public class MoviesTester extends JFrame {
         panelMovie.setLayout(new MigLayout());
         panelMovie.setBackground(Color.WHITE);
 
-        //Exit Button
+        //Exit and minimize Button
         JButton moviesButtonExit = new JButton();
         moviesButtonExit.addActionListener(new CloseListener());
         ButtonSettings.prepareButton(moviesButtonExit, "/exit.png");
+
+        JButton moviesButtonMinimize = new JButton();
+        moviesButtonMinimize.addActionListener(new MinimizeListener());
+        ButtonSettings.prepareButton(moviesButtonMinimize, "/minimize.png");
 
         //Info about the rules. And the winner
         infoAndWinner = new JLabel("<html><center>Each user have to search <br> the same number of movies</html>");
@@ -122,8 +127,9 @@ public class MoviesTester extends JFrame {
         selectedMoviesUserOne = new JLabel();
         selectedMoviesUserTwo = new JLabel();
 
-        panelMovie.add(moviesButtonExit);
-        panelMovie.add(infoAndWinner, "wrap, gapleft 12");
+        panelMovie.add(moviesButtonExit, "split 2");
+        panelMovie.add(moviesButtonMinimize);
+        panelMovie.add(infoAndWinner, "wrap, gapleft 8");
         panelMovie.add(searchMovieUserOne, "w 20:216:216");
         panelMovie.add(searchMovieUserTwo, "w 20:216:216, gapleft 223, wrap");
         panelMovie.add(choooseMoviesUOne, "w 20:286:286");
@@ -198,10 +204,10 @@ public class MoviesTester extends JFrame {
             }
 
             //Changing the winner
-            if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingAverage() > userNumberTwo.ratingAverage()) {
-                infoAndWinner.setText("<html><center>" + userNumberOne.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberOne.ratingAverage()) + "</html>");
-            } else if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingAverage() < userNumberTwo.ratingAverage()) {
-                infoAndWinner.setText("<html><center>" + userNumberTwo.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberTwo.ratingAverage()) + "</html>");
+            if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingMovieAverage() > userNumberTwo.ratingMovieAverage()) {
+                infoAndWinner.setText("<html><center>" + userNumberOne.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberOne.ratingMovieAverage()) + "</html>");
+            } else if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingMovieAverage() < userNumberTwo.ratingMovieAverage()) {
+                infoAndWinner.setText("<html><center>" + userNumberTwo.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberTwo.ratingMovieAverage()) + "</html>");
             } else {
                 infoAndWinner.setText("<html><center>Each user have to search <br> the same number of movies</html>");
             }
@@ -218,11 +224,11 @@ public class MoviesTester extends JFrame {
             //The average of the rating is done in User.class
             if (isUserOne) {
                 userNumberOne.addMovieToUser(movie);
-                resultNumberOne.setText(userNumberOne.getName() + " taste score: " + String.format("%.2f", userNumberOne.ratingAverage()));
+                resultNumberOne.setText(userNumberOne.getName() + " taste score: " + String.format("%.2f", userNumberOne.ratingMovieAverage()));
                 selectedMoviesUserOne.setText("<html>" + selectedMoviesUserOne.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + " " + movie.getDescription() + "</html>");
             } else {
                 userNumberTwo.addMovieToUser(movie);
-                resultNumberTwo.setText(userNumberTwo.getName() + " taste score: " + String.format("%.2f", userNumberTwo.ratingAverage()));
+                resultNumberTwo.setText(userNumberTwo.getName() + " taste score: " + String.format("%.2f", userNumberTwo.ratingMovieAverage()));
                 selectedMoviesUserTwo.setText("<html>" + selectedMoviesUserTwo.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + " " + movie.getDescription() + "</html>");
             }
         } catch (IOException e) {
@@ -232,28 +238,52 @@ public class MoviesTester extends JFrame {
 
     private void enterKeyAndUsers() {
         //Setup Key
-        boolean close = false;
-        ApiKeys.setImdbKey("YourKey");
-        while (!close && (ApiKeys.getImdbKey() == null || !ApiKeys.imdbKey.startsWith("k"))) {
-            if (ApiKeys.getImdbKey() == null) {
-                int exitMoviesTester = showConfirmDialog(null, "Are you sure that you want to not enter MoviesTester?", "", YES_NO_OPTION);
-                if (exitMoviesTester == YES_OPTION) {
-                    moviesMenuVisible = false;
-                    menuVisible = true;
-                    close = true;
-                }
-            } else {
-                ApiKeys.setImdbKey(showInputDialog("Insert your IMDb-Api key"));
+        try {
+            if (!(ApiKeys.getKeysFile().createNewFile())){
+                ApiKeys.setImdbKey(Files.readString(ApiKeys.getKeysFile().toPath()));
             }
+        } catch (IOException e) {
+            showMessageDialog(null, "Error creating file");
         }
+
+        try {
+            if (Files.readString(ApiKeys.getKeysFile().toPath()) == null || !(Files.readString(ApiKeys.getKeysFile().toPath()).startsWith("k"))){
+                boolean close = false;
+                ApiKeys.setImdbKey("YourKey");
+                while (!close && (ApiKeys.getImdbKey() == null || !ApiKeys.imdbKey.startsWith("k"))) {
+                    if (ApiKeys.getImdbKey() == null) {
+                        int exitMoviesTester = showConfirmDialog(null, "Are you sure that you want to not enter MoviesTester?", "", YES_NO_OPTION);
+                        if (exitMoviesTester == YES_OPTION) {
+                            moviesMenuVisible = false;
+                            menuVisible = true;
+                            close = true;
+                        }
+                    } else {
+                        ApiKeys.setImdbKey(showInputDialog("Insert your IMDb-Api key"));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            showMessageDialog(null, "Error finding file");
+        }
+
 
         //Making two players, NumberOne is the left and NumberTwo is the right
         if (!(ApiKeys.getImdbKey() == null) && ApiKeys.getImdbKey().startsWith("k")) {
+            ApiKeys.writeKey(ApiKeys.getImdbKey());
+
             userNumberOne = SetUpUser.setUpUser(1);
             userNumberTwo = SetUpUser.setUpUser(2);
         } else {
             userNumberOne = new User("deficere");
             userNumberTwo = new User("deficere");
+        }
+    }
+
+    private class MinimizeListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            MoviesTester.this.setState(Frame.ICONIFIED);
         }
     }
 

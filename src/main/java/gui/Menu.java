@@ -44,28 +44,40 @@ public class Menu extends JFrame {
 
     //Creation and distribution of the components
     private void buildMiGForm(JPanel panel) {
-        //Exit Button
+        //Exit and minimize Button
         JButton buttonExit = new JButton();
         buttonExit.addActionListener(new CloseListener());
+        JButton buttonMinimize = new JButton();
+        buttonMinimize.addActionListener(new MinimizeListener());
+
 
         //The other buttons in the main menu
         JButton buttonMovie = new JButton();
-        buttonMovie.addActionListener(new OpenMovieTester());
+        buttonMovie.addActionListener(e -> openMoviesTester());
+        JButton buttonSeries = new JButton();
+        buttonSeries.addActionListener(e -> openSeriesTester());
+        JButton buttonAnime = new JButton();
+        buttonAnime.addActionListener(e -> openAnimeTester());
         /* Future features Rating music books etc
         JButton buttonMusic = new JButton();
         JButton buttonBook = new JButton();
         */
 
-        ButtonSettings.prepareButton(buttonMovie, "/cinema.png");
+        //Prepare all the buttons, img, clear background etc
+        ButtonSettings.prepareButton(buttonMovie, "/movies.png");
+        ButtonSettings.prepareButton(buttonSeries, "/series.png");
+        ButtonSettings.prepareButton(buttonAnime, "/anime.png");
         /*  Future features Rating music books etc
         ButtonSettings.prepareButton(buttonMusic,"/music.png");
         ButtonSettings.prepareButton(buttonBook,"/book.png");
          */
         ButtonSettings.prepareButton(buttonExit, "/exit.png");
+        ButtonSettings.prepareButton(buttonMinimize, "/minimize.png");
 
 
         //Exit Button added before Title
-        panel.add(buttonExit, "wrap");
+        panel.add(buttonExit);
+        panel.add(buttonMinimize, "wrap");
 
         //Adding Font and Title
         try {
@@ -77,7 +89,7 @@ public class Menu extends JFrame {
 
             Font fontSubTitle = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(getClass().getResourceAsStream("/Voga-Medium.otf")));
             GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(fontSubTitle);
-            JLabel subTitle = new JLabel("<html><center><b>Welcome! Click the movie's button to test your taste <br/> You can do it alone or with a friend. Who will have a better taste? Good luck! </b> </html>", SwingConstants.CENTER);
+            JLabel subTitle = new JLabel("<html><center><b>Welcome! Choose one of the categories to test your taste <br/> You can do it alone or with a friend. Who will have better taste? Good luck! </b> </html>", SwingConstants.CENTER);
             subTitle.setFont(fontSubTitle.deriveFont(34f));
             subTitle.setForeground(Color.decode("#122c3b"));
 
@@ -92,7 +104,9 @@ public class Menu extends JFrame {
 
 
         //Adding all the Buttons
-        panel.add(buttonMovie, "align center, span");
+        panel.add(buttonMovie, "align center, span, split 3");
+        panel.add(buttonSeries, "align center, span");
+        panel.add(buttonAnime, "align center, span");
 
         /*  Future features Rating music books etc
         panel.add(buttonBook, "align center");
@@ -102,23 +116,47 @@ public class Menu extends JFrame {
     }
 
     //Listener open Movies Tester Window
-    private class OpenMovieTester implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            SwingUtilities.invokeLater(() -> {
-                MoviesTester moviesTester = new MoviesTester(Menu.this);
-                moviesTester.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-                moviesTester.setVisible(moviesTester.getMoviesMenuVisible());
-                Menu.this.setVisible(moviesTester.getMenuVisible());
-            });
-        }
+    private void openMoviesTester() {
+        SwingUtilities.invokeLater(() -> {
+            MoviesTester moviesTester = new MoviesTester(Menu.this);
+            moviesTester.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            moviesTester.setVisible(moviesTester.getMoviesMenuVisible());
+            Menu.this.setVisible(moviesTester.getMenuVisible());
+        });
     }
+
+    //Listener open Series Tester Window
+    private void openSeriesTester() {
+        SwingUtilities.invokeLater(() -> {
+            SeriesTester seriesTester = new SeriesTester(Menu.this);
+            seriesTester.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            seriesTester.setVisible(seriesTester.getSeriesMenuVisible());
+            Menu.this.setVisible(seriesTester.getMenuVisible());
+        });
+    }
+
+    private void openAnimeTester(){
+        SwingUtilities.invokeLater(() -> {
+            AnimeTester animeTester = new AnimeTester(Menu.this);
+            animeTester.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            animeTester.setVisible(animeTester.getAnimeMenuVisible());
+            Menu.this.setVisible(animeTester.getMenuVisible());
+        });
+    }
+
 
     //Listener to exit everything
     private static class CloseListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.exit(0);
+        }
+    }
+
+    private class MinimizeListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Menu.this.setState(Frame.ICONIFIED);
         }
     }
 }
