@@ -1,6 +1,6 @@
 package playerdata;
 
-public class Series {
+public class Anime {
 
     //Movie attributes given by IMDbApi
     private String title;
@@ -10,7 +10,7 @@ public class Series {
     private Double imDb;
     private String description;
 
-    public Series(){
+    public Anime(){
     }
 
     public String getTitle() {
