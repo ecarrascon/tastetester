@@ -44,9 +44,11 @@ public class Menu extends JFrame {
 
     //Creation and distribution of the components
     private void buildMiGForm(JPanel panel) {
-        //Exit Button
+        //Exit and minimize Button
         JButton buttonExit = new JButton();
         buttonExit.addActionListener(new CloseListener());
+        JButton buttonMinimize = new JButton();
+        buttonMinimize.addActionListener(new MinimizeListener());
 
         //The other buttons in the main menu
         JButton buttonMovie = new JButton();
@@ -56,16 +58,20 @@ public class Menu extends JFrame {
         JButton buttonBook = new JButton();
         */
 
+        //Prepare all the buttons, img, clear background etc
         ButtonSettings.prepareButton(buttonMovie, "/cinema.png");
         /*  Future features Rating music books etc
         ButtonSettings.prepareButton(buttonMusic,"/music.png");
         ButtonSettings.prepareButton(buttonBook,"/book.png");
          */
         ButtonSettings.prepareButton(buttonExit, "/exit.png");
+        ButtonSettings.prepareButton(buttonMinimize, "/minimize.png");
+
 
 
         //Exit Button added before Title
-        panel.add(buttonExit, "wrap");
+        panel.add(buttonExit );
+        panel.add(buttonMinimize, "wrap");
 
         //Adding Font and Title
         try {
@@ -119,6 +125,13 @@ public class Menu extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.exit(0);
+        }
+    }
+
+    private class MinimizeListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Menu.this.setState(Frame.ICONIFIED);
         }
     }
 }

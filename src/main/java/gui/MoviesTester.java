@@ -81,10 +81,14 @@ public class MoviesTester extends JFrame {
         panelMovie.setLayout(new MigLayout());
         panelMovie.setBackground(Color.WHITE);
 
-        //Exit Button
+        //Exit and minimize Button
         JButton moviesButtonExit = new JButton();
         moviesButtonExit.addActionListener(new CloseListener());
         ButtonSettings.prepareButton(moviesButtonExit, "/exit.png");
+
+        JButton moviesButtonMinimize = new JButton();
+        moviesButtonMinimize.addActionListener(new MinimizeListener());
+        ButtonSettings.prepareButton(moviesButtonMinimize, "/minimize.png");
 
         //Info about the rules. And the winner
         infoAndWinner = new JLabel("<html><center>Each user have to search <br> the same number of movies</html>");
@@ -123,8 +127,9 @@ public class MoviesTester extends JFrame {
         selectedMoviesUserOne = new JLabel();
         selectedMoviesUserTwo = new JLabel();
 
-        panelMovie.add(moviesButtonExit);
-        panelMovie.add(infoAndWinner, "wrap, gapleft 12");
+        panelMovie.add(moviesButtonExit, "split 2");
+        panelMovie.add(moviesButtonMinimize);
+        panelMovie.add(infoAndWinner, "wrap, gapleft 8");
         panelMovie.add(searchMovieUserOne, "w 20:216:216");
         panelMovie.add(searchMovieUserTwo, "w 20:216:216, gapleft 223, wrap");
         panelMovie.add(choooseMoviesUOne, "w 20:286:286");
@@ -272,6 +277,13 @@ public class MoviesTester extends JFrame {
         } else {
             userNumberOne = new User("deficere");
             userNumberTwo = new User("deficere");
+        }
+    }
+
+    private class MinimizeListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            MoviesTester.this.setState(Frame.ICONIFIED);
         }
     }
 
