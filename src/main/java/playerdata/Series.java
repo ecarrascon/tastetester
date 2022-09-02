@@ -1,6 +1,6 @@
 package playerdata;
 
-public class Movie {
+public class Series {
 
     //Movie attributes given by IMDbApi
     private String title;
@@ -10,30 +10,11 @@ public class Movie {
     private Double imDb;
     private String description;
 
-    public Movie() {
-    }
-
-    public Movie(String title) {
-        this.title = title;
-    }
-
-    public Movie(String title, String id) {
-        this.title = title;
-        this.id = id;
-    }
-
-    public Movie(String title, String id, String image) {
-        this.title = title;
-        this.id = id;
-        this.image = image;
+    public Series(){
     }
 
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getId() {
@@ -76,13 +57,4 @@ public class Movie {
         this.description = description;
     }
 
-    @Override
-    public String toString() {
-        return "Movie{" +
-                "title='" + title + '\'' +
-                ", id='" + id + '\'' +
-                ", rating=" + rating +
-                ", img='" + image + '\'' +
-                '}';
-    }
 }

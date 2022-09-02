@@ -7,7 +7,7 @@ import playerdata.Movie;
 import playerdata.SetUpUser;
 import playerdata.User;
 
-import movies.ImdbMovies;
+import apis.Imdb;
 import net.miginfocom.swing.MigLayout;
 import settings.ApiKeys;
 
@@ -34,7 +34,7 @@ public class MoviesTester extends JFrame {
     private JLabel selectedMoviesUserTwo;
     private JTextField searchMovieUserOne;
     private JTextField searchMovieUserTwo;
-    private final ImdbMovies imdbGetMovies;
+    private final Imdb imdbGetMovies;
     private User userNumberOne;
     private User userNumberTwo;
     private final Gson gson;
@@ -54,7 +54,7 @@ public class MoviesTester extends JFrame {
         setTitle("MoviesTester");
 
         //The Api of Imdb
-        imdbGetMovies = new ImdbMovies();
+        imdbGetMovies = new Imdb();
 
         //Window without borders
         setUndecorated(true);
@@ -204,10 +204,10 @@ public class MoviesTester extends JFrame {
             }
 
             //Changing the winner
-            if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingAverage() > userNumberTwo.ratingAverage()) {
-                infoAndWinner.setText("<html><center>" + userNumberOne.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberOne.ratingAverage()) + "</html>");
-            } else if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingAverage() < userNumberTwo.ratingAverage()) {
-                infoAndWinner.setText("<html><center>" + userNumberTwo.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberTwo.ratingAverage()) + "</html>");
+            if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingMovieAverage() > userNumberTwo.ratingMovieAverage()) {
+                infoAndWinner.setText("<html><center>" + userNumberOne.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberOne.ratingMovieAverage()) + "</html>");
+            } else if (userNumberOne.getMovies().size() == userNumberTwo.getMovies().size() && userNumberOne.ratingMovieAverage() < userNumberTwo.ratingMovieAverage()) {
+                infoAndWinner.setText("<html><center>" + userNumberTwo.getName() + " is the winner!<br>With a taste of: " + String.format("%.2f", userNumberTwo.ratingMovieAverage()) + "</html>");
             } else {
                 infoAndWinner.setText("<html><center>Each user have to search <br> the same number of movies</html>");
             }
@@ -224,11 +224,11 @@ public class MoviesTester extends JFrame {
             //The average of the rating is done in User.class
             if (isUserOne) {
                 userNumberOne.addMovieToUser(movie);
-                resultNumberOne.setText(userNumberOne.getName() + " taste score: " + String.format("%.2f", userNumberOne.ratingAverage()));
+                resultNumberOne.setText(userNumberOne.getName() + " taste score: " + String.format("%.2f", userNumberOne.ratingMovieAverage()));
                 selectedMoviesUserOne.setText("<html>" + selectedMoviesUserOne.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + " " + movie.getDescription() + "</html>");
             } else {
                 userNumberTwo.addMovieToUser(movie);
-                resultNumberTwo.setText(userNumberTwo.getName() + " taste score: " + String.format("%.2f", userNumberTwo.ratingAverage()));
+                resultNumberTwo.setText(userNumberTwo.getName() + " taste score: " + String.format("%.2f", userNumberTwo.ratingMovieAverage()));
                 selectedMoviesUserTwo.setText("<html>" + selectedMoviesUserTwo.getText().replaceAll("<html>|</html>", "") + "<br>" + movie.getTitle() + " " + movie.getDescription() + "</html>");
             }
         } catch (IOException e) {

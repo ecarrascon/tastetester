@@ -52,14 +52,17 @@ public class Menu extends JFrame {
 
         //The other buttons in the main menu
         JButton buttonMovie = new JButton();
-        buttonMovie.addActionListener(new OpenMovieTester());
+        buttonMovie.addActionListener(e -> openMoviesTester());
+        JButton buttonSeries = new JButton();
+        buttonSeries.addActionListener(e -> openSeriesTester());
         /* Future features Rating music books etc
         JButton buttonMusic = new JButton();
         JButton buttonBook = new JButton();
         */
 
         //Prepare all the buttons, img, clear background etc
-        ButtonSettings.prepareButton(buttonMovie, "/cinema.png");
+        ButtonSettings.prepareButton(buttonMovie, "/movies.png");
+        ButtonSettings.prepareButton(buttonSeries, "/series.png");
         /*  Future features Rating music books etc
         ButtonSettings.prepareButton(buttonMusic,"/music.png");
         ButtonSettings.prepareButton(buttonBook,"/book.png");
@@ -68,9 +71,8 @@ public class Menu extends JFrame {
         ButtonSettings.prepareButton(buttonMinimize, "/minimize.png");
 
 
-
         //Exit Button added before Title
-        panel.add(buttonExit );
+        panel.add(buttonExit);
         panel.add(buttonMinimize, "wrap");
 
         //Adding Font and Title
@@ -98,7 +100,8 @@ public class Menu extends JFrame {
 
 
         //Adding all the Buttons
-        panel.add(buttonMovie, "align center, span");
+        panel.add(buttonMovie, "align center, span, split 2");
+        panel.add(buttonSeries, "align center, span");
 
         /*  Future features Rating music books etc
         panel.add(buttonBook, "align center");
@@ -108,17 +111,25 @@ public class Menu extends JFrame {
     }
 
     //Listener open Movies Tester Window
-    private class OpenMovieTester implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            SwingUtilities.invokeLater(() -> {
-                MoviesTester moviesTester = new MoviesTester(Menu.this);
-                moviesTester.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-                moviesTester.setVisible(moviesTester.getMoviesMenuVisible());
-                Menu.this.setVisible(moviesTester.getMenuVisible());
-            });
-        }
+    private void openMoviesTester() {
+        SwingUtilities.invokeLater(() -> {
+            MoviesTester moviesTester = new MoviesTester(Menu.this);
+            moviesTester.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            moviesTester.setVisible(moviesTester.getMoviesMenuVisible());
+            Menu.this.setVisible(moviesTester.getMenuVisible());
+        });
     }
+
+    //Listener open Series Tester Window
+    private void openSeriesTester() {
+        SwingUtilities.invokeLater(() -> {
+            SeriesTester seriesTester = new SeriesTester(Menu.this);
+            seriesTester.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            seriesTester.setVisible(seriesTester.getSeriesMenuVisible());
+            Menu.this.setVisible(seriesTester.getMenuVisible());
+        });
+    }
+
 
     //Listener to exit everything
     private static class CloseListener implements ActionListener {
